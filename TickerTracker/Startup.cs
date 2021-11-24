@@ -78,6 +78,8 @@ namespace TickerTracker
                     "/api/hello",
                     new { controller = "RestHello", action = "Index" }
                 );
+
+                // add more rest ctrls later
             });
         }
     }
