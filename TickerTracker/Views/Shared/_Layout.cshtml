@@ -13,7 +13,7 @@
         <main class="flex flex-col h-full items-center w-full">
             <div class="py-5 text-white w-full bg-indigo-dark">
                 <div class="flex flex-wrap items-center justify-between m-auto max-w-xl px-2 w-full">
-                    <a asp-controller="Home" asp-action="Index" class="logo-link hover:underline logo-link no-underline text-white">
+                    <a asp-controller="Home" asp-action="Index" class="hover:underline no-underline text-white">
                         @using Microsoft.Extensions.Configuration
                         @inject IConfiguration Configuration
                         <span class="text-lg">@Configuration["Site Name"]</span>

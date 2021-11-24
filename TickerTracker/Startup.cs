@@ -36,6 +36,17 @@ namespace TickerTracker
             {
                 app.UseExceptionHandler("/Home/Error");
             }
+
+            app.Use(async (context, next) =>
+            {
+                await next();
+                if (context.Response.StatusCode == 404)
+                {
+                    context.Request.Path = "/404";
+                    await next();
+                }
+            });
+
             app.UseStaticFiles();
 
             app.UseRouting();
@@ -45,8 +56,28 @@ namespace TickerTracker
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllerRoute(
-                    name: "default",
-                    pattern: "{controller=Home}/{action=Index}/{id?}");
+                    "home",
+                    "/",
+                    new { controller = "Home", action = "Index" }
+                );
+
+                endpoints.MapControllerRoute(
+                    "privacy",
+                    "/privacy",
+                    new { controller = "Home", action = "Privacy" }
+                );
+
+                endpoints.MapControllerRoute(
+                    "404",
+                    "/404",
+                    new { controller = "HttpError", action = "_404" }
+                );
+
+                endpoints.MapControllerRoute(
+                    "rest-hello",
+                    "/api/hello",
+                    new { controller = "RestHello", action = "Index" }
+                );
             });
         }
     }
