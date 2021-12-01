@@ -14,5 +14,12 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
+    - name: docker login
+      env:
+        USER: ${{ secrets.DOCKER_USER }}
+        PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+      run: docker login -u $USER -p $PASSWORD
     - name: Build the Docker image
       run: docker build . -t elhardoum/ticker-tracker:latest
+    - name: docker push
+      run: docker push elhardoum/ticker-tracker:latest
