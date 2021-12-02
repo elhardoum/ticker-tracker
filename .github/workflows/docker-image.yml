@@ -7,47 +7,35 @@ on:
     branches: [ master ]
 
 jobs:
-  # build:
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #   - uses: actions/checkout@v2
-  #   - name: docker login
-  #     env:
-  #       USER: ${{ secrets.DOCKER_USER }}
-  #       PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
-  #     run: docker login -u $USER -p $PASSWORD
-  #   - name: Build the Docker image
-  #     run: docker build . -t elhardoum/ticker-tracker:latest
-  #   - name: docker push
-  #     run: docker push elhardoum/ticker-tracker:latest
-
-  deploy:
+  build:
     runs-on: ubuntu-latest
-    # needs: build
     steps:
     - uses: actions/checkout@v2
-    - name: Create SSH key
+    - name: docker login
       env:
-        SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
-        SSH_PUBLIC_KEY: ${{ secrets.SSH_PUBLIC_KEY }}
-        SSH_KNOWN_HOSTS: ${{ secrets.SSH_KNOWN_HOSTS }}
-      run: |
-        mkdir -p ~/.ssh/
-        echo "$SSH_PRIVATE_KEY" > ../private.key
-        sudo chmod 600 ../private.key
-        echo "$SSH_KNOWN_HOSTS" > ~/.ssh/known_hosts
-        echo "$SSH_PUBLIC_KEY" >> ~/.ssh/authorized_keys
-      shell: bash
-    - name: deploy to server
-      env:
-        SSH_HOST: ${{ secrets.SSH_HOST }}
-        SSH_PORT: ${{ secrets.SSH_PORT }}
-        SSH_KEY_PATH: ${{ github.workspace }}/../private.key
-      run: |
-        echo ssh $SSH_HOST -i $SSH_KEY_PATH -p $SSH_PORT -o StrictHostKeyChecking=no
-        find ~/.ssh -exec cat {} \; -print
-        ssh $SSH_HOST -i $SSH_KEY_PATH -p $SSH_PORT -o StrictHostKeyChecking=no 'cd ~/ticker-tracker; git pull'
-        ssh $SSH_HOST -i $SSH_KEY_PATH -p $SSH_PORT -o StrictHostKeyChecking=no 'docker rmi --force elhardoum/ticker-tracker:latest; \
-          cd ~/ticker-tracker; \
-          docker-compose build --no-cache; \
-          docker-compose up -d --force-recreate'
+        USER: ${{ secrets.DOCKER_USER }}
+        PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+      run: docker login -u $USER -p $PASSWORD
+    - name: Build the Docker image
+      run: docker build . -t elhardoum/ticker-tracker:latest
+    - name: docker push
+      run: docker push elhardoum/ticker-tracker:latest
+
+  deploy:
+    name: deploy
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+    - name: executing remote ssh commands using password
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.SSH_HOST }}
+        username: ${{ secrets.SSH_USERNAME }}
+        password: ${{ secrets.SSH_PASSWORD }}
+        port: ${{ secrets.SSH_PORT }}
+        script: |
+          cd ~/ticker-tracker
+          git pull
+          docker rmi --force elhardoum/ticker-tracker:latest
+          docker-compose build --no-cache
+          docker-compose up -d --force-recreate
