@@ -7,23 +7,23 @@ on:
     branches: [ master ]
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v2
-    - name: docker login
-      env:
-        USER: ${{ secrets.DOCKER_USER }}
-        PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
-      run: docker login -u $USER -p $PASSWORD
-    - name: Build the Docker image
-      run: docker build . -t elhardoum/ticker-tracker:latest
-    - name: docker push
-      run: docker push elhardoum/ticker-tracker:latest
+  # build:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #   - uses: actions/checkout@v2
+  #   - name: docker login
+  #     env:
+  #       USER: ${{ secrets.DOCKER_USER }}
+  #       PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+  #     run: docker login -u $USER -p $PASSWORD
+  #   - name: Build the Docker image
+  #     run: docker build . -t elhardoum/ticker-tracker:latest
+  #   - name: docker push
+  #     run: docker push elhardoum/ticker-tracker:latest
 
   deploy:
     runs-on: ubuntu-latest
-    needs: build
+    # needs: build
     steps:
     - uses: actions/checkout@v2
     - name: Create SSH key
@@ -44,6 +44,8 @@ jobs:
         SSH_PORT: ${{ secrets.SSH_PORT }}
         SSH_KEY_PATH: ${{ github.workspace }}/../private.key
       run: |
+        echo ssh $SSH_HOST -i $SSH_KEY_PATH -p $SSH_PORT -o StrictHostKeyChecking=no
+        find ~/.ssh -exec cat {} \; -print
         ssh $SSH_HOST -i $SSH_KEY_PATH -p $SSH_PORT -o StrictHostKeyChecking=no 'cd ~/ticker-tracker; git pull'
         ssh $SSH_HOST -i $SSH_KEY_PATH -p $SSH_PORT -o StrictHostKeyChecking=no 'docker rmi --force elhardoum/ticker-tracker:latest; \
           cd ~/ticker-tracker; \
