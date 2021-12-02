@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/dotnet/sdk:3.1 AS base
+FROM mcr.microsoft.com/dotnet/sdk:3.1
 
 COPY . /usr/src/app
 WORKDIR /usr/src/app

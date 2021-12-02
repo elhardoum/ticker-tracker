@@ -7,11 +7,8 @@ on:
     branches: [ master ]
 
 jobs:
-
   build:
-
     runs-on: ubuntu-latest
-
     steps:
     - uses: actions/checkout@v2
     - name: docker login
@@ -23,3 +20,31 @@ jobs:
       run: docker build . -t elhardoum/ticker-tracker:latest
     - name: docker push
       run: docker push elhardoum/ticker-tracker:latest
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+    - uses: actions/checkout@v2
+    - name: Create SSH key
+      env:
+        SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+        SSH_KNOWN_HOSTS: ${{ secrets.SSH_KNOWN_HOSTS }}
+        SSH_KEY_PATH: ${{ github.workspace }}/../private.key
+      run: |
+        mkdir -p ~/.ssh/
+        echo "$SSH_PRIVATE_KEY" > ../private.key
+        sudo chmod 600 ../private.key
+        echo "$SSH_KNOWN_HOSTS" > ~/.ssh/known_hosts
+      shell: bash
+    - name: deploy to server
+      env:
+        SSH_HOST: ${{ secrets.SSH_HOST }}
+        SSH_PORT: ${{ secrets.SSH_PORT }}
+        SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+      run: |
+        ssh $SSH_HOST -i $SSH_PRIVATE_KEY -p $SSH_PORT -o StrictHostKeyChecking=no 'cd ~/ticker-tracker; git pull'
+        ssh $SSH_HOST -i $SSH_PRIVATE_KEY -p $SSH_PORT -o StrictHostKeyChecking=no 'docker rmi --force elhardoum/ticker-tracker:latest; \
+          cd ~/ticker-tracker; \
+          docker-compose build --no-cache; \
+          docker-compose up -d --force-recreate'
