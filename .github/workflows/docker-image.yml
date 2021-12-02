@@ -37,5 +37,5 @@ jobs:
           cd ~/ticker-tracker
           git pull
           docker rmi --force elhardoum/ticker-tracker:latest
-          docker-compose build --no-cache
+          docker-compose build --no-cache --pull
           docker-compose up -d --force-recreate
