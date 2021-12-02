@@ -35,7 +35,7 @@ jobs:
         port: ${{ secrets.SSH_PORT }}
         script: |
           cd ~/ticker-tracker
-          git pull
+          git pull origin master
           docker rmi --force elhardoum/ticker-tracker:latest
           docker-compose build --no-cache --pull
           docker-compose up -d --force-recreate

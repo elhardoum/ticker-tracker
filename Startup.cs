@@ -37,12 +37,14 @@ namespace TickerTracker
                 app.UseExceptionHandler("/Home/Error");
             }
 
+            var errPath = "/" + System.Guid.NewGuid().ToString("N");
+
             app.Use(async (context, next) =>
             {
                 await next();
                 if (context.Response.StatusCode == 404)
                 {
-                    context.Request.Path = "/404";
+                    context.Request.Path = errPath;
                     await next();
                 }
             });
@@ -69,7 +71,7 @@ namespace TickerTracker
 
                 endpoints.MapControllerRoute(
                     "404",
-                    "/404",
+                    errPath,
                     new { controller = "HttpError", action = "_404" }
                 );
 
