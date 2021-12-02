@@ -29,12 +29,14 @@ jobs:
     - name: Create SSH key
       env:
         SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+        SSH_PUBLIC_KEY: ${{ secrets.SSH_PUBLIC_KEY }}
         SSH_KNOWN_HOSTS: ${{ secrets.SSH_KNOWN_HOSTS }}
       run: |
         mkdir -p ~/.ssh/
         echo "$SSH_PRIVATE_KEY" > ../private.key
         sudo chmod 600 ../private.key
         echo "$SSH_KNOWN_HOSTS" > ~/.ssh/known_hosts
+        echo "$SSH_PUBLIC_KEY" >> ~/.ssh/authorized_keys
       shell: bash
     - name: deploy to server
       env:
