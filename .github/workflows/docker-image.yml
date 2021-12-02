@@ -30,7 +30,6 @@ jobs:
       env:
         SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
         SSH_KNOWN_HOSTS: ${{ secrets.SSH_KNOWN_HOSTS }}
-        SSH_KEY_PATH: ${{ github.workspace }}/../private.key
       run: |
         mkdir -p ~/.ssh/
         echo "$SSH_PRIVATE_KEY" > ../private.key
@@ -41,10 +40,10 @@ jobs:
       env:
         SSH_HOST: ${{ secrets.SSH_HOST }}
         SSH_PORT: ${{ secrets.SSH_PORT }}
-        SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+        SSH_KEY_PATH: ${{ github.workspace }}/../private.key
       run: |
-        ssh $SSH_HOST -i $SSH_PRIVATE_KEY -p $SSH_PORT -o StrictHostKeyChecking=no 'cd ~/ticker-tracker; git pull'
-        ssh $SSH_HOST -i $SSH_PRIVATE_KEY -p $SSH_PORT -o StrictHostKeyChecking=no 'docker rmi --force elhardoum/ticker-tracker:latest; \
+        ssh $SSH_HOST -i $SSH_KEY_PATH -p $SSH_PORT -o StrictHostKeyChecking=no 'cd ~/ticker-tracker; git pull'
+        ssh $SSH_HOST -i $SSH_KEY_PATH -p $SSH_PORT -o StrictHostKeyChecking=no 'docker rmi --force elhardoum/ticker-tracker:latest; \
           cd ~/ticker-tracker; \
           docker-compose build --no-cache; \
           docker-compose up -d --force-recreate'
