@@ -6,4 +6,4 @@ WORKDIR /usr/src/app
 RUN dotnet restore
 RUN dotnet build
 
-ENTRYPOINT sh -c 'echo $ENVIRONMENT | grep -i dev >/dev/null; [ $? -gt 0 ] && dotnet run || dotnet watch run'
+ENTRYPOINT sh /usr/src/app/entrypoint.sh

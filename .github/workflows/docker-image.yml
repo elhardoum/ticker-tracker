@@ -7,7 +7,15 @@ on:
     branches: [ master ]
 
 jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: local unit tests
+      run: docker run --rm -it -e ENVIRONMENT=test $(docker build -q .)
+
   build:
+    needs: test
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
@@ -22,7 +30,6 @@ jobs:
       run: docker push elhardoum/ticker-tracker:latest
 
   deploy:
-    name: deploy
     needs: build
     runs-on: ubuntu-latest
     steps:

@@ -5,6 +5,8 @@ VisualStudioVersion = 16.0.810.9
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TickerTracker", "TickerTracker.csproj", "{2B52E737-E0BF-46D9-A0F9-DCA4B2E661DA}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnitTests", "UnitTests\UnitTests.csproj", "{612C9253-4518-4048-BA7D-9A96F0BADD66}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{2B52E737-E0BF-46D9-A0F9-DCA4B2E661DA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2B52E737-E0BF-46D9-A0F9-DCA4B2E661DA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2B52E737-E0BF-46D9-A0F9-DCA4B2E661DA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{612C9253-4518-4048-BA7D-9A96F0BADD66}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{612C9253-4518-4048-BA7D-9A96F0BADD66}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{612C9253-4518-4048-BA7D-9A96F0BADD66}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{612C9253-4518-4048-BA7D-9A96F0BADD66}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
