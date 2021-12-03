@@ -12,7 +12,7 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: local unit tests
-      run: docker run --rm -it -e ENVIRONMENT=test $(docker build -q .)
+      run: docker run --rm -e ENVIRONMENT=test $(docker build -q .)
 
   build:
     needs: test
