@@ -80,7 +80,11 @@ namespace TickerTracker
                     "/api/hello",
                     new { controller = "RestHello", action = "Index" }
                 );
-
+                endpoints.MapControllerRoute( //About page controller 
+                    "About",
+                    "/about",
+                    new { controller = "Home", action = "About" }
+                );
                 // add more rest ctrls later
             });
         }
