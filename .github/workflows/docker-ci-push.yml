@@ -29,6 +29,8 @@ jobs:
         USER: ${{ secrets.DOCKER_USER }}
         PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
       run: docker login -u $USER -p $PASSWORD
+    - name: check dotnet file
+      run: test -f .env || touch .env
     - name: Build the Docker image
       run: docker-compose build --no-cache
     - name: docker push
