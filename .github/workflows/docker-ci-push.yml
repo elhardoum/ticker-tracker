@@ -13,10 +13,11 @@ jobs:
       env:
         ACCEPT_EULA: Y
         SA_PASSWORD: SuchPa$$word2204
+        ENVIRONMENT: test
       run: |
-        test -f .env || touch .env
+        env > .env
         docker-compose build -q --no-cache
-        docker-compose run --rm -e ENVIRONMENT=test web
+        docker-compose run --rm
 
   build:
     needs: test
