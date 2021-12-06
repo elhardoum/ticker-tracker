@@ -10,4 +10,7 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: local unit tests
+      env:
+        ACCEPT_EULA: Y
+        SA_PASSWORD: SuchPa$$word2204
       run: docker run --rm -e ENVIRONMENT=test $(docker build -q .)
