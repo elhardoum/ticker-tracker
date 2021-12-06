@@ -403,6 +403,8 @@ ASALocalRun/
 
 # Local History for Visual Studio
 .localhistory/
-.env
 
+.env
 .git/
+todo.md
+mssql/

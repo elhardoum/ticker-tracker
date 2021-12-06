@@ -11,3 +11,17 @@ services:
     volumes:
       - .:/usr/src/app
     env_file: .env
+  
+  mssql:
+    image: mssql-db
+    volumes:
+      - ./db:/usr/src/app
+      - ./mssql:/var/opt/mssql/data
+    working_dir: /usr/src/app
+    env_file: .env
+    ports:
+      - 1433:1433
+    restart: always
+    build:
+      context: .
+      dockerfile: db/Dockerfile
