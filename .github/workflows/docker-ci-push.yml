@@ -1,4 +1,4 @@
-name: Docker Image CI
+name: Docker CI
 
 on:
   push:
@@ -10,7 +10,14 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: local unit tests
-      run: docker run --rm -e ENVIRONMENT=test $(docker build -q .)
+      env:
+        ACCEPT_EULA: Y
+        SA_PASSWORD: SuchPa$$word2204
+        ENVIRONMENT: test
+      run: |
+        env > .env
+        docker-compose build -q --no-cache
+        docker-compose run --rm
 
   build:
     needs: test
@@ -23,9 +30,13 @@ jobs:
         PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
       run: docker login -u $USER -p $PASSWORD
     - name: Build the Docker image
-      run: docker build . -t elhardoum/ticker-tracker:latest
+      run: |
+        docker build . -t elhardoum/ticker-tracker:latest
+        docker build db/ -t elhardoum/ticker-tracker-db:latest
     - name: docker push
-      run: docker push elhardoum/ticker-tracker:latest
+      run: |
+        docker push elhardoum/ticker-tracker:latest
+        docker push elhardoum/ticker-tracker-db:latest
 
   deploy:
     needs: build
@@ -42,5 +53,6 @@ jobs:
           cd ~/ticker-tracker
           git pull origin master
           docker rmi --force elhardoum/ticker-tracker:latest
+          docker rmi --force elhardoum/ticker-tracker-db:latest
           docker-compose build --no-cache --pull
           docker-compose up -d --force-recreate

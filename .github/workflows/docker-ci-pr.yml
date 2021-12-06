@@ -1,4 +1,4 @@
-name: Docker Image CI
+name: Docker CI
 
 on:
   pull_request:
@@ -10,4 +10,11 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: local unit tests
-      run: docker run --rm -e ENVIRONMENT=test $(docker build -q .)
+      env:
+        ACCEPT_EULA: Y
+        SA_PASSWORD: SuchPa$$word2204
+        ENVIRONMENT: test
+      run: |
+        env > .env
+        docker-compose build -q --no-cache
+        docker-compose run --rm
