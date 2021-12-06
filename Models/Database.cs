@@ -3,8 +3,8 @@ using System.Data.SqlClient;
 
 namespace TickerTracker.Models
 {
-	public class Database
-	{
+    public class Database
+    {
         private static readonly Database _instance = new Database();
         public delegate void QueryCallback<SqlConnection>(SqlConnection conn);
 
@@ -18,7 +18,7 @@ namespace TickerTracker.Models
         }
 
         private string getConnectionString()
-		{
+        {
             return "Server=mssql,1433;Database=TickerTracker;User Id=SA;Password="
                 + Environment.GetEnvironmentVariable("SA_PASSWORD");
         }
