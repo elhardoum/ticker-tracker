@@ -4,7 +4,7 @@ USER root
 
 RUN apt-get -y update && apt-get install -y dos2unix
 
-COPY db /usr/src/app
+COPY . /usr/src/app
 
 RUN dos2unix *
 

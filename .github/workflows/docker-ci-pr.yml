@@ -13,4 +13,4 @@ jobs:
       env:
         ACCEPT_EULA: Y
         SA_PASSWORD: SuchPa$$word2204
-      run: docker run --rm -e ENVIRONMENT=test $(docker build -q .)
+      run: docker-compose build -q && docker-compose run --rm -e ENVIRONMENT=test web

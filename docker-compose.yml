@@ -13,7 +13,7 @@ services:
     env_file: .env
   
   mssql:
-    image: mssql-db
+    image: elhardoum/ticker-tracker-db:latest
     volumes:
       - ./db:/usr/src/app
       - ./mssql:/var/opt/mssql/data
