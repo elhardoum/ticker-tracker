@@ -85,6 +85,17 @@ namespace TickerTracker
                     "/about",
                     new { controller = "Home", action = "About" }
                 );
+                 endpoints.MapControllerRoute( //Portfolio page controller 
+                    "Portfolio",
+                    "/portfolio",
+                    new { controller = "Home", action = "Portfolio" }
+                );
+
+                   endpoints.MapControllerRoute( //Create Profile page controller 
+                    "Create Profile",
+                    "/createprofile",
+                    new { controller = "Home", action = "CreateProfile" }
+                );
                 // add more rest ctrls later
             });
         }
