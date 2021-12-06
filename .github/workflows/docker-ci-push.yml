@@ -15,7 +15,7 @@ jobs:
         SA_PASSWORD: SuchPa$$word2204
       run: |
         test -f .env || touch .env
-        docker-compose build -q
+        docker-compose build -q --no-cache
         docker-compose run --rm -e ENVIRONMENT=test web
 
   build:
