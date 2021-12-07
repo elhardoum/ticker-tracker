@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -75,28 +75,35 @@ namespace TickerTracker
                     new { controller = "HttpError", action = "_404" }
                 );
 
-                endpoints.MapControllerRoute(
-                    "rest-hello",
-                    "/api/hello",
-                    new { controller = "RestHello", action = "Index" }
-                );
-                endpoints.MapControllerRoute( //About page controller 
+                endpoints.MapControllerRoute( // About page controller 
                     "About",
                     "/about",
                     new { controller = "Home", action = "About" }
                 );
-                 endpoints.MapControllerRoute( //Portfolio page controller 
+
+                endpoints.MapControllerRoute(
+                    "auth-endpoint",
+                    "/auth/redirect",
+                    new { controller = "TwitterAuth", action = "Redirect" }
+                );
+
+                endpoints.MapControllerRoute(
+                    "auth-endpoint",
+                    "/auth/callback",
+                    new { controller = "TwitterAuth", action = "Callback" }
+                );
+
+                endpoints.MapControllerRoute( // Portfolio page controller 
                     "Portfolio",
                     "/portfolio",
                     new { controller = "Home", action = "Portfolio" }
                 );
 
-                   endpoints.MapControllerRoute( //Create Profile page controller 
+                endpoints.MapControllerRoute( // Create Profile page controller 
                     "Create Profile",
                     "/createprofile",
                     new { controller = "Home", action = "CreateProfile" }
                 );
-                // add more rest ctrls later
             });
         }
     }

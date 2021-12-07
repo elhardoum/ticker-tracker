@@ -19,13 +19,19 @@ namespace TickerTracker.Models
 
         private string getConnectionString()
         {
-            return "Server=mssql,1433;Database=TickerTracker;User Id=SA;Password="
-                + Environment.GetEnvironmentVariable("SA_PASSWORD");
+            return String.Format("Server={0},{1};Database={2};User Id={3};Password={4}",
+                Util.getEnv("DB_HOST", "mssql"),
+                Util.getEnv("DB_PORT", "1433"),
+                Util.getEnv("DB_NAME", "TickerTracker"),
+                Util.getEnv("SA_USER", "SA"),
+                Util.getEnv("SA_PASSWORD"));
         }
 
-        public void Query(QueryCallback<SqlConnection> callback)
+        // @todo convert to async/await
+		// https://stackoverflow.com/questions/23285753/how-to-await-on-async-delegate
+        public static void Query(QueryCallback<SqlConnection> callback)
         {
-            using (var conn = new SqlConnection(getConnectionString()))
+            using (var conn = new SqlConnection(Instance().getConnectionString()))
             {
                 try
                 {

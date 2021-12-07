@@ -20,7 +20,7 @@ namespace UnitTests
         {
             bool connected = false;
 
-            var exception = Record.Exception(() => Database.Instance().Query(conn => connected = true));
+            var exception = Record.Exception(() => Database.Query(conn => connected = true));
 
             // no exceptions thrown
             Assert.Null(exception);
