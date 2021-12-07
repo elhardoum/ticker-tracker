@@ -28,7 +28,7 @@ namespace TickerTracker.Models
         }
 
         // @todo convert to async/await
-		// https://stackoverflow.com/questions/23285753/how-to-await-on-async-delegate
+        // https://stackoverflow.com/questions/23285753/how-to-await-on-async-delegate
         public static void Query(QueryCallback<SqlConnection> callback)
         {
             using (var conn = new SqlConnection(Instance().getConnectionString()))

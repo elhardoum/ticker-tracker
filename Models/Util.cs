@@ -4,12 +4,12 @@ using System.Collections;
 namespace TickerTracker.Models
 {
     public class Util
-	{
+    {
         public static string getEnv(string key, string _default = null)
-		{
+        {
             return _Util.Instance().getEnv(key, _default);
         }
-	}
+    }
 
     public class _Util
     {
@@ -28,9 +28,9 @@ namespace TickerTracker.Models
         }
 
         public string getEnv( string key, string _default )
-		{
+        {
             string value = envVars.Contains(key) ? envVars[key].ToString() : null;
             return String.IsNullOrEmpty(value) ? _default : value;
-		}
+        }
     }
 }

@@ -14,7 +14,7 @@ namespace TickerTracker.Models
         public string Secret;
 
         public bool Save()
-		{
+        {
             bool saved = false;
 
             Database.Query(conn =>
