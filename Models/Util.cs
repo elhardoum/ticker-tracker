@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Security.Cryptography;
 using System.Text;
+using Microsoft.AspNetCore.Http;
 
 namespace TickerTracker.Models
 {
@@ -9,6 +10,7 @@ namespace TickerTracker.Models
     {
         public static string getEnv(string key, string _default = null) => _Util.Instance().getEnv(key, _default);
         public static string genToken(int limit, bool md5 = true) => _Util.Instance().genToken(limit, md5);
+        public static string Url(string path = "/", HttpRequest request = null) => _Util.Url(path, request);
     }
 
     public class _Util
@@ -60,6 +62,14 @@ namespace TickerTracker.Models
 
                 return builder.ToString();
             }
+        }
+
+        public static string Url(string path = "/", HttpRequest request = null)
+        {
+            return String.Format("{0}://{1}{2}",
+                _Util.Instance().getEnv("HTTP_SCHEME", null != request ? request.Scheme : ""),
+                _Util.Instance().getEnv("HTTP_HOST", null != request ? request.Scheme : ""),
+                path);
         }
     }
 }

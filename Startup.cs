@@ -10,7 +10,7 @@ using Microsoft.Extensions.Hosting;
 
 namespace TickerTracker
 {
-    public class Startup //salman comment test 
+    public class Startup
     {
         public Startup(IConfiguration configuration)
         {

@@ -19,7 +19,7 @@ namespace TickerTracker.Controllers
                     Models.Util.getEnv("TWITTER_CONSUMER_KEY"),
                     Models.Util.getEnv("TWITTER_CONSUMER_SECRET"));
             var authenticationRequestId = Guid.NewGuid().ToString();
-            var redirectPath = Request.Scheme + "://" + Request.Host.Value + "/auth/callback";
+            var redirectPath = Models.Util.Url("/auth/callback", Request);
 
             // Add the user identifier as a query parameters that will be received by `ValidateTwitterAuth`
             var redirectURL = _RequestStore.AppendAuthenticationRequestIdToCallbackUrl(redirectPath, authenticationRequestId);
