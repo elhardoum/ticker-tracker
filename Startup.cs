@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -10,7 +10,7 @@ using Microsoft.Extensions.Hosting;
 
 namespace TickerTracker
 {
-    public class Startup //salman comment test 
+    public class Startup
     {
         public Startup(IConfiguration configuration)
         {
@@ -55,6 +55,37 @@ namespace TickerTracker
 
             app.UseAuthorization();
 
+            app.Use(async (context, next) => {
+                context.Request.Cookies.TryGetValue("sid", out string sid);
+
+                if ( string.IsNullOrEmpty(sid) )
+                {
+                    context.Items["user"] = null;
+                } else
+                {
+                    context.Items["user"] = await Models.Users.findOne("SessionId", sid);
+                }
+
+                await next();
+            });
+
+            // auth protection
+            app.Use(async (context, next) => {
+                if (null == context.Items["user"])
+                {
+                    if (context.Request.RouteValues.TryGetValue("authProtected", out object authProtected))
+                    {
+                        if (Boolean.Parse(authProtected.ToString()) && null == context.Items["user"])
+                        {
+                            context.Response.Redirect( Models.Util.Url("/auth/notice", context.Request) );
+                            return;
+                        }
+                    }
+                }
+
+                await next();
+            });
+
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllerRoute(
@@ -75,28 +106,41 @@ namespace TickerTracker
                     new { controller = "HttpError", action = "_404" }
                 );
 
-                endpoints.MapControllerRoute(
-                    "rest-hello",
-                    "/api/hello",
-                    new { controller = "RestHello", action = "Index" }
-                );
-                endpoints.MapControllerRoute( //About page controller 
+                endpoints.MapControllerRoute( // About page controller 
                     "About",
                     "/about",
                     new { controller = "Home", action = "About" }
                 );
-                 endpoints.MapControllerRoute( //Portfolio page controller 
-                    "Portfolio",
-                    "/portfolio",
-                    new { controller = "Home", action = "Portfolio" }
+
+                endpoints.MapControllerRoute(
+                    "auth-redirect",
+                    "/auth/redirect",
+                    new { controller = "TwitterAuth", action = "Redirect" }
                 );
 
-                   endpoints.MapControllerRoute( //Create Profile page controller 
+                endpoints.MapControllerRoute(
+                    "auth-callback",
+                    "/auth/callback",
+                    new { controller = "TwitterAuth", action = "Callback" }
+                );
+
+                endpoints.MapControllerRoute(
+                    "auth-notice",
+                    "/auth/notice",
+                    new { controller = "HttpError", action = "_401" }
+                );
+
+                endpoints.MapControllerRoute( // Portfolio page controller 
+                    "Portfolio",
+                    "/portfolio",
+                    new { controller = "Home", action = "Portfolio", authProtected = true }
+                );
+
+                endpoints.MapControllerRoute( // Create Profile page controller 
                     "Create Profile",
                     "/createprofile",
-                    new { controller = "Home", action = "CreateProfile" }
+                    new { controller = "Home", action = "CreateProfile", authProtected = true }
                 );
-                // add more rest ctrls later
             });
         }
     }

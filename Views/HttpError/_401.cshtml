@@ -1,0 +1,8 @@
+@{
+    ViewData["Title"] = "HTTP 401 - Unauthorized";
+}
+
+<div class="max-w-md m-auto px-3">
+    <h2 class="text-grey-darker uppercase tracking-wide text-center">Authentication Required</h2>
+    <p class="mt-5 text-grey-darker">The resource you were trying to access requires a login. Please <a asp-controller="TwitterAuth" asp-action="Redirect" class="hover:underline no-underline text-blue-dark">login with Twitter</a> to continue.</p>
+</div>

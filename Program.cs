@@ -20,7 +20,7 @@ namespace TickerTracker
             Host.CreateDefaultBuilder(args)
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
-                    webBuilder.UseUrls("http://*:5000");
+                    webBuilder.UseUrls(Models.Util.getEnv("APP_LISTEN_HTTP_URL", "http://*:5000"));
                     webBuilder.UseStartup<Startup>();
                 });
     }

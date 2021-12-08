@@ -1,99 +1,57 @@
+
 @{
     ViewData["Title"] = "Portfolio";
 }
 
 
-<div class="flex-1 text-grey-darker">
-    <h1 class="text-xl tracking-wide uppercase text-center">@ViewData["Title"]</h1>
+<!-- based on tailwind components : https://tailwindcomponents.com/component/user-table user table By webtobesocial  -->
 
 
 
-
-
-<br>
-<br>
-
-<!-- Top 3 cryptos for now we can add more  -->
-<h2 class = " text-grey-darker"> Select Cryptos to track</h2> 
-
-<div class="block">
- 
-  <div class="mt-2">
-    <div>
-      <label class="inline-flex items-center">
-        <input type="checkbox" class="form-checkbox" checked />
-        <span class="ml-2">BTC - Bitcoin</span>
-      </label>
+<div class="text-xl tracking-wide uppercase">
+    <div class="p-4 flex">
+        <h1 class="flex-1 text-grey-darker">
+            Portfolio
+        </h1>
     </div>
-    <div>
-      <label class="inline-flex items-center">
-        <input type="checkbox" class="form-checkbox" />
-        <span class="ml-2">ETH - Etherium</span>
-      </label>
-    </div>
-    <div>
-      <label class="inline-flex items-center">
-        <input type="checkbox" class="form-checkbox" />
-        <span class="ml-2">ALGO - Algorand</span>
-      </label>
-    </div>
-  </div>
-</div>
-<br>
-<br>
-<br>
-<!-- Top 3 popular stocks for now we can add more  -->
-<h2 class = " text-grey-darker"> Select Stocks to track</h2>
+    <div class="px-3 py-4 flex justify-center">
+        <table class="w-full text-md bg-white shadow-md rounded mb-4">
+            <tbody>
+                <tr class="border-b">
+                    <th class="text-left p-3 px-5">TICKER</th>
+                    <th class="text-left p-3 px-5">Price</th>
+                     <th class="text-left p-3 px-5"></th>
+                    
+                    <th></th>
+                </tr>
+                <tr class="border-b hover:bg-orange-100 bg-gray-100">
+                    <td class="p-3 px-5"><input type="text" value="Bitcoin" class="bg-transparent"></td>
+                    <td class="p-3 px-5"><input type="text" value="$65,000" class="bg-transparent"></td>
+                     <td class="p-3 px-5">
+                            <td class="p-3 px-5 flex justify-center ">
+                            <button type="button" class="mr-3 text-sm bg-green hover:bg-blue-700 text-white py-1 px-2 rounded focus:outline-none focus:shadow-outline">Save</button>
+                            <button type="button" class="text-sm bg-blue hover:bg-red-700 text-white py-1 px-2 rounded focus:outline-none focus:shadow-outline">Delete</button></td>
+                    </td>
 
-<div class="block">
- 
-  <div class="mt-2">
-    <div>
-      <label class="inline-flex items-center">
-        <input type="checkbox" class="form-checkbox" checked />
-        <span class="ml-2">AAPL - Apple inc</span>
-      </label>
-    </div>
-    <div>
-      <label class="inline-flex items-center">
-        <input type="checkbox" class="form-checkbox" />
-        <span class="ml-2">LCID - Lucid Group Inc</span>
-      </label>
-    </div>
-    <div>
-      <label class="inline-flex items-center">
-        <input type="checkbox" class="form-checkbox" />
-        <span class="ml-2">F - Ford Motor Company</span>
-      </label>
-    </div>
-  </div>
-</div>
-<br>
-<br>
-<!-- 3 Update frequencys -->
-<h2 class = " text-grey-darker">Update - Frequency</h2>
 
-<div class="block">
- 
-  <div class="mt-2">
-    <div>
-      <label class="inline-flex items-center">
-        <input type="checkbox" class="form-checkbox" checked />
-        <span class="ml-2">30 minutes</span>
-      </label>
-    </div>
-    <div>
-      <label class="inline-flex items-center">
-        <input type="checkbox" class="form-checkbox" />
-        <span class="ml-2">1 hour</span>
-      </label>
-    </div>
-    <div>
-      <label class="inline-flex items-center">
-        <input type="checkbox" class="form-checkbox" />
-        <span class="ml-2">6 hours</span>
-      </label>
-    </div>
-  </div>
-</div>
+                </tr>
+                <tr class="border-b hover:bg-orange-100">
+                    <td class="p-3 px-5"><input type="text" value="Algorand" class="bg-transparent"></td>
+                    <td class="p-3 px-5"><input type="text" value="$2.20" class="bg-transparent"></td>
+                      <td class="p-3 px-5">
+                            <td class="p-3 px-5 flex justify-center ">
+                            <button type="button" class="mr-3 text-sm bg-green hover:bg-blue-700 text-white py-1 px-2 rounded focus:outline-none focus:shadow-outline">Save</button>
+                            <button type="button" class="text-sm bg-blue hover:bg-red-700 text-white py-1 px-2 rounded focus:outline-none focus:shadow-outline">Delete</button></td>
+                    </td>
 
+                     <tr class="border-b hover:bg-orange-100">
+                    <td class="p-3 px-5"><input type="text" value="Etherium" class="bg-transparent"></td>
+                    <td class="p-3 px-5"><input type="text" value="$5,500" class="bg-transparent"></td>
+                      <td class="p-3 px-5">
+                            <td class="p-3 px-5 flex justify-center ">
+                            <button type="button" class="mr-3 text-sm bg-green hover:bg-blue-700 text-white py-1 px-2 rounded focus:outline-none focus:shadow-outline">Save</button>
+                            <button type="button" class="text-sm bg-blue hover:bg-red-700 text-white py-1 px-2 rounded focus:outline-none focus:shadow-outline">Delete</button></td>
+                    </td>
+                    
+                    
+              
