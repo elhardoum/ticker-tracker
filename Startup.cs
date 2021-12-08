@@ -55,6 +55,37 @@ namespace TickerTracker
 
             app.UseAuthorization();
 
+            app.Use(async (context, next) => {
+                context.Request.Cookies.TryGetValue("sid", out string sid);
+
+                if ( string.IsNullOrEmpty(sid) )
+                {
+                    context.Items["user"] = null;
+                } else
+                {
+                    context.Items["user"] = await Models.Users.findOne("SessionId", sid);
+                }
+
+                await next();
+            });
+
+            // auth protection
+            app.Use(async (context, next) => {
+                if (null == context.Items["user"])
+                {
+                    if (context.Request.RouteValues.TryGetValue("authProtected", out object authProtected))
+                    {
+                        if (Boolean.Parse(authProtected.ToString()) && null == context.Items["user"])
+                        {
+                            context.Response.Redirect( Models.Util.Url("/auth/notice", context.Request) );
+                            return;
+                        }
+                    }
+                }
+
+                await next();
+            });
+
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllerRoute(
@@ -82,27 +113,33 @@ namespace TickerTracker
                 );
 
                 endpoints.MapControllerRoute(
-                    "auth-endpoint",
+                    "auth-redirect",
                     "/auth/redirect",
                     new { controller = "TwitterAuth", action = "Redirect" }
                 );
 
                 endpoints.MapControllerRoute(
-                    "auth-endpoint",
+                    "auth-callback",
                     "/auth/callback",
                     new { controller = "TwitterAuth", action = "Callback" }
+                );
+
+                endpoints.MapControllerRoute(
+                    "auth-notice",
+                    "/auth/notice",
+                    new { controller = "HttpError", action = "_401" }
                 );
 
                 endpoints.MapControllerRoute( // Portfolio page controller 
                     "Portfolio",
                     "/portfolio",
-                    new { controller = "Home", action = "Portfolio" }
+                    new { controller = "Home", action = "Portfolio", authProtected = true }
                 );
 
                 endpoints.MapControllerRoute( // Create Profile page controller 
                     "Create Profile",
                     "/createprofile",
-                    new { controller = "Home", action = "CreateProfile" }
+                    new { controller = "Home", action = "CreateProfile", authProtected = true }
                 );
             });
         }

@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -27,20 +27,22 @@ namespace TickerTracker.Controllers
         {
             return View();
         }
-          public IActionResult About()
-        {
-            return View();
-        }
-           public IActionResult Portfolio()
+
+        public IActionResult About()
         {
             return View();
         }
 
-            public IActionResult CreateProfile()
+        public IActionResult Portfolio()
         {
             return View();
         }
-        // @todo delete
+
+        public IActionResult CreateProfile()
+        {
+            return View();
+        }
+
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {

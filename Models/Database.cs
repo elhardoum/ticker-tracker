@@ -36,6 +36,11 @@ namespace TickerTracker.Models
                 {
                     conn.Open();
                     await Task.Run(() => callback(conn));
+
+                    try
+                    {
+                        conn.Close();
+                    } catch (Exception) {}
                 }
                 catch (SqlException e)
                 {

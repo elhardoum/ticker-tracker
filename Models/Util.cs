@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections;
 using System.Security.Cryptography;
 using System.Text;
@@ -68,7 +68,7 @@ namespace TickerTracker.Models
         {
             return String.Format("{0}://{1}{2}",
                 _Util.Instance().getEnv("HTTP_SCHEME", null != request ? request.Scheme : ""),
-                _Util.Instance().getEnv("HTTP_HOST", null != request ? request.Scheme : ""),
+                _Util.Instance().getEnv("HTTP_HOST", null != request ? request.Host.Value : ""),
                 path);
         }
     }
