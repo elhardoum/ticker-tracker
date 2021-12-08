@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Data;
 using System.Data.SqlClient;
+using System.Threading.Tasks;
 
 namespace TickerTracker.Models
 {
@@ -12,32 +13,34 @@ namespace TickerTracker.Models
         public string Avatar;
         public string Token;
         public string Secret;
+        public string SessionId;
 
-        public bool Save()
+        public async Task<bool> Save()
         {
             bool saved = false;
 
-            Database.Query(conn =>
+            await Database.Query(async (conn) =>
             {
                 String query = @"if exists ( select 1 from Users where Id=@Id )
-                    update Users set Handle=@Handle, Name=@Name, Avatar=@Avatar, Token=@Token, Secret=@Secret
+                    update Users set Handle=@Handle, Name=@Name, Avatar=@Avatar, Token=@Token, Secret=@Secret, SessionId=@SessionId
                         where Id=@Id;
                 else
-                    insert into Users (Id, Handle, Name, Avatar, Token, Secret)
-                        values (@Id, @Handle, @Name, @Avatar, @Token, @Secret);";
+                    insert into Users (Id, Handle, Name, Avatar, Token, Secret, SessionId)
+                        values (@Id, @Handle, @Name, @Avatar, @Token, @Secret, @SessionId);";
 
                 SqlCommand command = new SqlCommand(query, conn);
 
-                command.Parameters.Add("@Id", (SqlDbType) Enum.Parse(typeof(SqlDbType), Id.ToString(), true));
-                command.Parameters.Add("@Handle", (SqlDbType) Enum.Parse(typeof(SqlDbType), Handle, true));
-                command.Parameters.Add("@Name", (SqlDbType) Enum.Parse(typeof(SqlDbType), Name, true));
-                command.Parameters.Add("@Avatar", (SqlDbType) Enum.Parse(typeof(SqlDbType), Avatar, true));
-                command.Parameters.Add("@Token", (SqlDbType) Enum.Parse(typeof(SqlDbType), Token, true));
-                command.Parameters.Add("@Secret", (SqlDbType) Enum.Parse(typeof(SqlDbType), Secret, true));
+                command.Parameters.Add(new SqlParameter("@Id", Id));
+                command.Parameters.Add(new SqlParameter("@Handle", Handle));
+                command.Parameters.Add(new SqlParameter("@Name", Name));
+                command.Parameters.Add(new SqlParameter("@Avatar", Avatar));
+                command.Parameters.Add(new SqlParameter("@Token", Token));
+                command.Parameters.Add(new SqlParameter("@Secret", Secret));
+                command.Parameters.Add(new SqlParameter("@SessionId", SessionId));
 
                 try
                 {
-                    saved = command.ExecuteNonQuery() > 0;
+                    saved = await command.ExecuteNonQueryAsync() > 0;
                 }
                 catch (SqlException e)
                 {

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Http;
 using Tweetinvi;
 using Tweetinvi.Auth;
 using Tweetinvi.Parameters;
@@ -63,22 +64,26 @@ namespace TickerTracker.Controllers
                 Avatar = twitterUser.ProfileImageUrl,
                 Token = userCreds.AccessToken,
                 Secret = userCreds.AccessTokenSecret,
+                SessionId = Models.Util.genToken(32),
             };
 
             try
             {
-                User.Save();
+                await User.Save();
+
+                // save session
+                Response.Cookies.Append("sid", User.SessionId,
+                    new CookieOptions
+                    {
+                        Path = "/",
+                        HttpOnly = true,
+                        IsEssential = true,
+                        Expires = DateTimeOffset.Now.AddDays(7), // magic numbers ftw
+                    }
+                );
             } catch ( Exception ) {}
 
-            // @todo return redirect
-            return Json(new Dictionary<string, string>(){
-                {"Id", twitterUser.IdStr},
-                {"Handle", twitterUser.ScreenName},
-                {"Name", twitterUser.Name},
-                {"Avatar", twitterUser.ProfileImageUrl},
-                {"Token", userCreds.AccessToken},
-                {"Secret", userCreds.AccessTokenSecret},
-            });
+            return Redirect(Request.Scheme + "://" + Request.Host.Value + "/");
         }
     }
 }

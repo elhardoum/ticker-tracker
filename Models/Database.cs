@@ -1,12 +1,13 @@
-using System;
+﻿using System;
 using System.Data.SqlClient;
+using System.Threading.Tasks;
 
 namespace TickerTracker.Models
 {
     public class Database
     {
         private static readonly Database _instance = new Database();
-        public delegate void QueryCallback<SqlConnection>(SqlConnection conn);
+        public delegate Task QueryCallback<SqlConnection>(SqlConnection conn);
 
         private Database()
         {
@@ -27,23 +28,19 @@ namespace TickerTracker.Models
                 Util.getEnv("SA_PASSWORD"));
         }
 
-        // @todo convert to async/await
-        // https://stackoverflow.com/questions/23285753/how-to-await-on-async-delegate
-        public static void Query(QueryCallback<SqlConnection> callback)
+        public static async Task Query(QueryCallback<SqlConnection> callback)
         {
             using (var conn = new SqlConnection(Instance().getConnectionString()))
             {
                 try
                 {
                     conn.Open();
+                    await Task.Run(() => callback(conn));
                 }
                 catch (SqlException e)
                 {
                     Console.WriteLine("Database connection error: {0}, {1}", e.ToString(), e.Message);
-                    return;
                 }
-
-                callback(conn);
             }
         }
     }
