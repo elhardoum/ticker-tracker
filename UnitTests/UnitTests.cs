@@ -1,6 +1,7 @@
 ﻿using System;
 using Xunit;
 using TickerTracker.Models;
+using System.Threading.Tasks;
 
 namespace UnitTests
 {
@@ -16,11 +17,15 @@ namespace UnitTests
     public class DatabaseTests
     {
         [Fact]
-        public void Connection()
+        public async void Connection()
         {
             bool connected = false;
 
-            var exception = Record.Exception(() => Database.Instance().Query(conn => connected = true));
+            var exception = await Record.ExceptionAsync(() => Database.Query(conn =>
+            {
+                connected = true;
+                return Task.FromResult(0);
+            }));
 
             // no exceptions thrown
             Assert.Null(exception);

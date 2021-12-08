@@ -8,11 +8,16 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="xUnit" Version="2.4.1" />
     <PackageReference Include="System.Data.SqlClient" Version="4.8.3" />
+    <PackageReference Include="tweetinviapi" Version="5.0.4" />
   </ItemGroup>
 
   <ItemGroup>
     <None Remove="System.Data.SqlClient" />
+    <None Remove="TweetinviAPI" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="UnitTests\**" />
   </ItemGroup>
 </Project>
