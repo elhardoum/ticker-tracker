@@ -85,5 +85,20 @@ namespace TickerTracker.Controllers
 
             return Redirect(Request.Scheme + "://" + Request.Host.Value + "/");
         }
+
+        public IActionResult Logout()
+        {
+            Response.Cookies.Append("sid", " ",
+                new CookieOptions
+                {
+                    Path = "/",
+                    HttpOnly = true,
+                    IsEssential = true,
+                    Expires = DateTimeOffset.Now.AddDays(-7),
+                }
+            );
+
+            return Redirect("/");
+        }
     }
 }

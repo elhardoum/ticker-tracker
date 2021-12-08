@@ -125,6 +125,12 @@ namespace TickerTracker
                 );
 
                 endpoints.MapControllerRoute(
+                    "logout",
+                    "/auth/logout",
+                    new { controller = "TwitterAuth", action = "Logout", authProtected = true }
+                );
+
+                endpoints.MapControllerRoute(
                     "auth-notice",
                     "/auth/notice",
                     new { controller = "HttpError", action = "_401" }
@@ -134,12 +140,6 @@ namespace TickerTracker
                     "Portfolio",
                     "/portfolio",
                     new { controller = "Home", action = "Portfolio", authProtected = true }
-                );
-
-                endpoints.MapControllerRoute( // Create Profile page controller 
-                    "Create Profile",
-                    "/createprofile",
-                    new { controller = "Home", action = "CreateProfile", authProtected = true }
                 );
             });
         }
