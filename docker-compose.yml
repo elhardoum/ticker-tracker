@@ -19,8 +19,6 @@ services:
       - ./mssql:/var/opt/mssql/data
     working_dir: /usr/src/app
     env_file: .env
-    ports:
-      - 1433:1433
     restart: always
     build:
       context: .

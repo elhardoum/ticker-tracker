@@ -1,0 +1,57 @@
+@{
+    ViewData["Title"] = "My Portfolio";
+}
+<div class="w-full"><div class="m-auto max-w-xl px-2 py-4">
+    <div class="flex items justify-between mb-6">
+        <h2 class="roboto text-grey-darkest text-xl uppercase">My Holdings</h2>
+        <div class="flex items-center">
+            <a asp-controller="Portfolio" asp-action="Create" class="bg-teal-dark no-underline px-2 py-1 rounded select-none table text-white text-xs">&plus; Add New</a>
+        </div>
+    </div>
+
+    <table class="table-fixed w-full text-base leading-normal mb-4" id="dash-table">
+        <thead>
+            <tr class="bg-grey-light font-bold select-none text-grey-darker text-left tracking-wide uppercase text-xs break-words">
+                <th class="p-2">Ticker</th>
+                <th class="p-2">Status</th>
+                <th class="p-2">Monitored %</th>
+                <th class="p-2">Tweets</th>
+                <th class="p-2"></th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr class="text-xs break-words px-4 py-4 bg-grey-lighter">
+                <td class="p-2">AAPL</td>
+                <td class="p-2">
+                    <span class="bg-green inline-flex items-center px-2 py-1 rounded-sml select-none text-white">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" class="fill-current"><path d="M20.285 2l-11.285 11.567-5.286-5.011-3.714 3.716 9 8.728 15-15.285z"></path></svg>
+                        <small class="ml-1 uppercase leading-none">Enabled</small>
+                    </span>
+                </td>
+                <td class="p-2">-10.5</td>
+                <td class="p-2">0</td>
+                <td class="p-2">
+                    <a class="text-teal-dark cursor-pointer" href="javascript:">Edit</a>
+                    &nbsp;&nbsp;
+                    <a class="text-red-dark cursor-pointer" href="javascript:">Delete</a>
+                </td>
+            </tr>
+            <tr class="text-xs break-words px-4 py-4 bg-grey-lightest">
+                <td class="p-2">MSFT</td>
+                <td class="p-2">
+                    <span class="bg-red inline-flex items-center px-2 py-1 rounded-sml select-none text-white">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" class="fill-current"><path d="M24 20.188l-8.315-8.209 8.2-8.282-3.697-3.697-8.212 8.318-8.31-8.203-3.666 3.666 8.321 8.24-8.206 8.313 3.666 3.666 8.237-8.318 8.285 8.203z"></path></svg>
+                        <small class="ml-1 uppercase leading-none">Disabled</small>
+                    </span>
+                </td>
+                <td class="p-2">5.25</td>
+                <td class="p-2">22</td>
+                <td class="p-2">
+                    <a class="text-teal-dark cursor-pointer" href="javascript:">Edit</a>
+                    &nbsp;&nbsp;
+                    <a class="text-red-dark cursor-pointer" href="javascript:">Delete</a>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div></div>

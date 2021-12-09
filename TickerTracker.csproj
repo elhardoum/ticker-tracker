@@ -20,4 +20,12 @@
   <ItemGroup>
     <Compile Remove="UnitTests\**" />
   </ItemGroup>
+
+  <ItemGroup>
+    <Watch Remove="mssql\**" />
+    <Watch Remove=".git\**" />
+    <Watch Remove="db\**" />
+    <Watch Remove="bin\**" />
+    <Watch Remove="obj\**" />
+  </ItemGroup>
 </Project>

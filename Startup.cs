@@ -106,7 +106,7 @@ namespace TickerTracker
                     new { controller = "HttpError", action = "_404" }
                 );
 
-                endpoints.MapControllerRoute( // About page controller 
+                endpoints.MapControllerRoute(
                     "About",
                     "/about",
                     new { controller = "Home", action = "About" }
@@ -127,7 +127,7 @@ namespace TickerTracker
                 endpoints.MapControllerRoute(
                     "logout",
                     "/auth/logout",
-                    new { controller = "TwitterAuth", action = "Logout", authProtected = true }
+                    new { controller = "TwitterAuth", action = "Logout" }
                 );
 
                 endpoints.MapControllerRoute(
@@ -136,10 +136,16 @@ namespace TickerTracker
                     new { controller = "HttpError", action = "_401" }
                 );
 
-                endpoints.MapControllerRoute( // Portfolio page controller 
-                    "Portfolio",
+                endpoints.MapControllerRoute(
+                    "portfolio",
                     "/portfolio",
-                    new { controller = "Home", action = "Portfolio", authProtected = true }
+                    new { controller = "Portfolio", action = "Index", authProtected = true }
+                );
+
+                endpoints.MapControllerRoute(
+                    "portfolio-create",
+                    "/portfolio/create",
+                    new { controller = "Portfolio", action = "Create", authProtected = true }
                 );
             });
         }
