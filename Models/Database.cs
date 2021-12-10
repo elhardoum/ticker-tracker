@@ -18,7 +18,7 @@ namespace TickerTracker.Models
             return _instance;
         }
 
-        private string getConnectionString()
+        public string getConnectionString()
         {
             return String.Format("Server={0},{1};Database={2};User Id={3};Password={4}",
                 Util.getEnv("DB_HOST", "mssql"),

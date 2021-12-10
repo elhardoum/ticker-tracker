@@ -25,3 +25,10 @@ CREATE TABLE Users (
   SessionId VARCHAR(32),
   unique ( Id )
 );
+
+CREATE TABLE Options (
+  Name VARCHAR(100) PRIMARY KEY NOT NULL,
+  Value NVARCHAR(max) NOT NULL,
+  Updated DATETIME NOT NULL,
+  unique ( Name )
+);

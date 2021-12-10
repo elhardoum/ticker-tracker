@@ -1,0 +1,26 @@
+﻿@{
+    ViewData["Title"] = "Supported Ticker Symbols - Stocks and ETFs";
+}
+<div class="w-full"><div class="m-auto max-w-xl px-2 py-4">
+    <h2 class="roboto text-grey-darkest text-xl mb-6">List of Supported Stocks and ETFs</h2>
+
+    <p>We strive to provide support for more publicly traded stocks, ETFs, Crypto and more. Due to API limitations, we are only able to query market data for the following symbols:</p>
+
+    <table class="table-fixed w-full text-base leading-normal my-4" id="stocks">
+        <thead>
+            <tr class="bg-grey-light font-bold select-none text-grey-darker text-left tracking-wide uppercase text-xs break-words">
+                <th class="p-2 roboto">Ticker Symbol</th>
+                <th class="p-2 roboto">Description</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var stock in (Dictionary<string, string>)ViewData["stocks"])
+            {
+                <tr class="text-xs break-words px-4 py-4 bg-grey-lighter">
+                    <td class="p-2">@stock.Key</td>
+                    <td class="p-2">@stock.Value</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div></div>

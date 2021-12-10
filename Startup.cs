@@ -1,7 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
+using Hangfire;
+using Hangfire.SqlServer;
+using Hangfire.Storage;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -23,6 +27,26 @@ namespace TickerTracker
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllersWithViews();
+
+            // Hangfire cron jobs
+            var connStr = Models.Database.Instance().getConnectionString();
+            GlobalConfiguration.Configuration.UseSqlServerStorage(connStr);
+
+            services.AddHangfire(configuration => configuration
+                .SetDataCompatibilityLevel(CompatibilityLevel.Version_170)
+                .UseSimpleAssemblyNameTypeSerializer()
+                .UseRecommendedSerializerSettings()
+                .UseSqlServerStorage(connStr, new SqlServerStorageOptions
+                {
+                    CommandBatchMaxTimeout = TimeSpan.FromMinutes(5),
+                    SlidingInvisibilityTimeout = TimeSpan.FromMinutes(5),
+                    QueuePollInterval = TimeSpan.Zero,
+                    UseRecommendedIsolationLevel = true,
+                    DisableGlobalLocks = true
+                }));
+
+            // Add the processing server as IHostedService
+            services.AddHangfireServer();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -147,7 +171,33 @@ namespace TickerTracker
                     "/portfolio/create",
                     new { controller = "Portfolio", action = "Create", authProtected = true }
                 );
+
+                endpoints.MapControllerRoute(
+                    "supported-tickers",
+                    "/about/supported-ticker-symbols/stocks-etfs",
+                    new { controller = "SupportedTickers", action = "Stocks" }
+                );
+
+                endpoints.MapControllerRoute(
+                    "supported-tickers",
+                    "/about/supported-ticker-symbols/cryptocurrencies",
+                    new { controller = "SupportedTickers", action = "Crypto" }
+                );
             });
+
+            // cron jobs
+            var cron = new Models.Cron();
+
+            // cleanup
+            RecurringJob.RemoveIfExists("fetch-stocks");
+            RecurringJob.RemoveIfExists("fetch-crypto");
+
+            // initial run
+            Task.Run(() => cron.FetchStocks());
+            Task.Run(() => cron.FetchCrypto());
+
+            RecurringJob.AddOrUpdate("fetch-stocks", () => cron.FetchStocks(), "*/2 * * * *");
+            RecurringJob.AddOrUpdate("fetch-crypto", () => cron.FetchCrypto(), "*/2 * * * *");
         }
     }
 }

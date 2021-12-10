@@ -11,6 +11,7 @@
             <label class="table text-sm w-full mb-4">
                 <strong class="mb-1 table text-grey-darkest">Ticker Symbol <sup class="text-red">*</sup></strong>
                 <input class="border focus:border-teal-dark focus:outline-none leading-tight px-3 py-2 rounded text-grey-darker w-full" type="text" name="ticker" />
+                <small class="table mt-1">A valid ticker symbol. Supported symbols: <a asp-controller="SupportedTickers" asp-action="Stocks" target="_blank" class="text-teal-dark">Stocks & ETFs</a>, <a asp-controller="SupportedTickers" asp-action="Crypto" target="_blank" class="text-teal-dark">Cryptocurrencies</a>.</small>
             </label>
             
             <label class="table text-sm w-full mb-4">

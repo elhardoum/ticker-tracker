@@ -83,7 +83,7 @@ namespace TickerTracker.Controllers
                 );
             } catch ( Exception ) {}
 
-            return Redirect(Request.Scheme + "://" + Request.Host.Value + "/");
+            return Redirect("/");
         }
 
         public IActionResult Logout()

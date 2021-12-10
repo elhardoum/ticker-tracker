@@ -1,0 +1,26 @@
+@{
+    ViewData["Title"] = "Supported Ticker Symbols - Cryptocurrencies";
+}
+<div class="w-full"><div class="m-auto max-w-xl px-2 py-4">
+    <h2 class="roboto text-grey-darkest text-xl mb-6">List of Supported Cryptocurrencies</h2>
+
+    <p>We strive to provide support for more publicly traded stocks, ETFs, Crypto and more. Due to API limitations, we are only able to query market data for the following symbols:</p>
+
+    <table class="table-fixed w-full text-base leading-normal my-4" id="crypto">
+        <thead>
+            <tr class="bg-grey-light font-bold select-none text-grey-darker text-left tracking-wide uppercase text-xs break-words">
+                <th class="p-2 roboto">Ticker Symbol</th>
+                <th class="p-2 roboto">Description</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var crypto in (Dictionary<string, Dictionary<string, string>>)ViewData["crypto"])
+            {
+                <tr class="text-xs break-words px-4 py-4 bg-grey-lighter">
+                    <td class="p-2">@crypto.Value.GetValueOrDefault("symbol").ToString().ToUpper()</td>
+                    <td class="p-2">@crypto.Value.GetValueOrDefault("name").ToString()</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div></div>

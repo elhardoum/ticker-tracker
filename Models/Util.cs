@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections;
+using System.Net.Http;
 using System.Security.Cryptography;
 using System.Text;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 
 namespace TickerTracker.Models
@@ -11,6 +13,10 @@ namespace TickerTracker.Models
         public static string getEnv(string key, string _default = null) => _Util.Instance().getEnv(key, _default);
         public static string genToken(int limit, bool md5 = true) => _Util.Instance().genToken(limit, md5);
         public static string Url(string path = "/", HttpRequest request = null) => _Util.Url(path, request);
+        public static async Task<Option> getOption(string name) => await _Util.getOption(name);
+        public static async Task<bool> deleteOption(string name) => await _Util.deleteOption(name);
+        public static async Task<bool> setOption(string name, string value) => await _Util.setOption(name, value);
+        public static async Task<string> getUrl(string url) => await _Util.getUrl(url);
     }
 
     public class _Util
@@ -70,6 +76,41 @@ namespace TickerTracker.Models
                 _Util.Instance().getEnv("HTTP_SCHEME", null != request ? request.Scheme : ""),
                 _Util.Instance().getEnv("HTTP_HOST", null != request ? request.Host.Value : ""),
                 path);
+        }
+
+        public static async Task<Option> getOption(string name)
+		{
+            var option = new Option { Name = name };
+            return await option.Load() ? option : null;
+		}
+
+        public static async Task<bool> deleteOption(string name)
+        {
+            var option = new Option { Name = name };
+            return await option.Delete();
+        }
+
+        public static async Task<bool> setOption(string name, string value)
+        {
+            var option = new Option { Name = name, Value = value };
+            return await option.Save();
+        }
+
+        public static async Task<string> getUrl(string url)
+        {
+            try
+            {
+                HttpClient client = new HttpClient();
+                HttpResponseMessage response = await client.GetAsync(url);
+                response.EnsureSuccessStatusCode();
+                string responseBody = await response.Content.ReadAsStringAsync();
+                return responseBody;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Util.JsonRequest error: {0}, {1}", e.ToString(), e.Message);
+                return null;
+            }
         }
     }
 }

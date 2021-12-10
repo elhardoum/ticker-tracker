@@ -30,7 +30,6 @@ namespace TickerTracker.Models
 
                 SqlCommand command = new SqlCommand(query, conn);
 
-                command.Parameters.Add(new SqlParameter("@col", field));
                 command.Parameters.Add(new SqlParameter("@val", value));
 
                 try
