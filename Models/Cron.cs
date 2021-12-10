@@ -11,8 +11,8 @@ namespace TickerTracker.Models
         // refresh stock/crypto list every hour
         private const int TICKER_LIST_REFRESH_TTL = 60 * 60;
 
-		public async Task FetchStocks()
-		{
+        public async Task FetchStocks()
+        {
             string optionName = "supported-stocks";
 
             var opt = await Util.getOption(optionName);
@@ -23,7 +23,7 @@ namespace TickerTracker.Models
             string data = await Util.getUrl("https://finnhub.io/api/v1/stock/symbol?exchange=US&token=" + Util.getEnv("FINNHUB_TOKEN"));
 
             if ( ! string.IsNullOrEmpty(data) )
-			{
+            {
                 //var symbols = JsonConvert.DeserializeObject<List<Dictionary<string, Dictionary<string, string>>>>(data);
                 var symbols = JsonConvert.DeserializeObject<List<Dictionary<string, string>>>(data);
 
@@ -40,7 +40,7 @@ namespace TickerTracker.Models
                     if (string.IsNullOrEmpty(symbol))
                         return;
 
-                    prepared.Add(symbol, ! string.IsNullOrEmpty(desc) ? desc : symbol);
+                    prepared.Add(symbol.ToUpper(), ! string.IsNullOrEmpty(desc) ? desc : symbol);
                 });
 
                 if ( prepared.Count > 0 )

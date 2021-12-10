@@ -5,6 +5,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
+using Newtonsoft.Json;
 
 namespace TickerTracker.Models
 {
@@ -17,6 +18,7 @@ namespace TickerTracker.Models
         public static async Task<bool> deleteOption(string name) => await _Util.deleteOption(name);
         public static async Task<bool> setOption(string name, string value) => await _Util.setOption(name, value);
         public static async Task<string> getUrl(string url) => await _Util.getUrl(url);
+        public static void Debug(object obj) => Console.WriteLine(JsonConvert.SerializeObject(obj));
     }
 
     public class _Util
@@ -79,10 +81,10 @@ namespace TickerTracker.Models
         }
 
         public static async Task<Option> getOption(string name)
-		{
+        {
             var option = new Option { Name = name };
             return await option.Load() ? option : null;
-		}
+        }
 
         public static async Task<bool> deleteOption(string name)
         {

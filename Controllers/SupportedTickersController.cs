@@ -14,9 +14,12 @@ namespace TickerTracker.Controllers
             var stocks = new Dictionary<string, string>();
 
             if ( null != stocksRaw )
-			{
+            {
                 stocks = JsonConvert.DeserializeObject<Dictionary<string, string>>(stocksRaw.Value);
             }
+
+            if (Request.Query.ContainsKey("json"))
+                return Json(stocks);
 
             ViewData["stocks"] = stocks;
 
@@ -32,6 +35,9 @@ namespace TickerTracker.Controllers
             {
                 crypto = JsonConvert.DeserializeObject<Dictionary<string, Dictionary<string, string>>>(cryptoRaw.Value);
             }
+
+            if (Request.Query.ContainsKey("json"))
+                return Json(crypto);
 
             ViewData["crypto"] = crypto;
 

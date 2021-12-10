@@ -173,6 +173,13 @@ namespace TickerTracker
                 );
 
                 endpoints.MapControllerRoute(
+                    "portfolio-edit",
+                    "/portfolio/edit/{editId}",
+                    new { controller = "Portfolio", action = "Update", authProtected = true },
+                    constraints: new { editId = "\\d+" }
+                );
+
+                endpoints.MapControllerRoute(
                     "supported-tickers",
                     "/about/supported-ticker-symbols/stocks-etfs",
                     new { controller = "SupportedTickers", action = "Stocks" }

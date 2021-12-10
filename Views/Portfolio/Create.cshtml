@@ -1,39 +1,79 @@
-@{
+﻿@{
     ViewData["Title"] = "New Portfolio Entry";
+    string ticker = "POST" == Context.Request.Method && Context.Request.Form.ContainsKey("ticker") ? Context.Request.Form["ticker"].ToString() : "";
+    string percentage = "POST" == Context.Request.Method && Context.Request.Form.ContainsKey("percentage") ? Context.Request.Form["percentage"].ToString() : "";
+    string tweet = "POST" == Context.Request.Method && Context.Request.Form.ContainsKey("tweet") ? Context.Request.Form["tweet"].ToString() : "";
+
+    var editItem = (TickerTracker.Models.PortfolioItem)ViewData["editItem"];
+
+    if (null != editItem && "POST" != Context.Request.Method)
+    {
+        ticker = editItem.Symbol.ToString();
+        percentage = editItem.Percent.ToString();
+        tweet = editItem.TweetText.ToString();
+        ViewData["Title"] = "Edit Portfolio Entry";
+    }
 }
-<div class="w-full"><div class="m-auto max-w-xl px-2 py-4">
-    <div class="flex items justify-between mb-6">
-        <h2 class="roboto text-grey-darkest text-xl uppercase">New Watched Ticker</h2>
+<div class="w-full">
+    <div class="m-auto max-w-xl px-2 py-4">
+        <div class="flex items justify-between mb-6">
+            <h2 class="roboto text-grey-darkest text-xl uppercase">
+                @{if (null != editItem) {<text>Edit</text>} else {<text>Update</text>} }
+                Watched Ticker
+            </h2>
+        </div>
+
+        @if (null != ViewData["errors"] && ((List<string>)ViewData["errors"]).Count > 0)
+        {
+            <div class="bg-orange-lightest border-l-4 border-red mb-6 p-4 text-red-dark" role="alert">
+                <p class="font-bold mb-1">Errors:</p>
+                @foreach (string error in (List<string>)ViewData["errors"])
+                {
+                    <small class="table">@error</small>
+                }
+            </div>
+        }
+
+        <form class="w-full" method="post">
+            <p class="w-full">
+                <label class="table text-sm w-full mb-4">
+                    <strong class="mb-1 table text-grey-darkest">Ticker Symbol <sup class="text-red">*</sup></strong>
+                    <input class="border focus:border-teal-dark focus:outline-none leading-tight px-3 py-2 rounded text-grey-darker w-full" type="text" name="ticker"
+                       @{ <text>value="@ticker"</text> } />
+                    <small class="table mt-1">A valid ticker symbol. Supported symbols: <a asp-controller="SupportedTickers" asp-action="Stocks" target="_blank" class="text-teal-dark">Stocks & ETFs</a>, <a asp-controller="SupportedTickers" asp-action="Crypto" target="_blank" class="text-teal-dark">Cryptocurrencies</a>.</small>
+                </label>
+
+                <label class="table text-sm w-full mb-4">
+                    <strong class="mb-1 table text-grey-darkest">Monitored % <sup class="text-red">*</sup></strong>
+                    <input class="border focus:border-teal-dark focus:outline-none leading-tight px-3 py-2 rounded text-grey-darker w-full" type="text" name="percentage" placeholder="+5.44% or -10.5%"
+                      @{ <text>value="@percentage"</text> } />
+                    <small class="table mt-1">If the price moves by n% up or down, the tweet will be made. Please use negative numbers for downward price movement.</small>
+                </label>
+
+                <label class="table text-sm w-full mb-4">
+                    <strong class="mb-1 table text-grey-darkest">Tweet Text</strong>
+                    <textarea class="border focus:border-teal-dark focus:outline-none leading-tight px-3 py-2 rounded text-grey-darker w-full" type="text" name="tweet" rows="5" placeholder="$MSFT has moved 5.44% over the past hour.">@{ <text>@tweet</text> }</textarea>
+                    <small class="table mt-1">Optionally format your tweet for this entry. Defaults to the generic Tweet text.</small>
+                </label>
+
+                <span class="flex items-center text-sm mt-6">
+                    <input class="border border-transparent cursor-pointer leading-tight px-4 py-2 rounded text-grey-darker text-white focus:border-teal-dark focus:bg-white focus:text-teal-dark bg-teal hover:border-teal-dark hover:bg-white hover:text-teal-dark"
+                           type="submit"
+                           @{if (null != editItem) {<text>value="Update Ticker"</text>} else {<text>value="Submit Ticker"</text>} } />
+                    <a class="text-teal-dark ml-4" asp-controller="Portfolio" asp-action="Index">Cancel</a>
+                </span>
+            </p>
+        </form>
     </div>
+</div>
 
-    <form class="w-full">
-        <p class="w-full">
-            <label class="table text-sm w-full mb-4">
-                <strong class="mb-1 table text-grey-darkest">Ticker Symbol <sup class="text-red">*</sup></strong>
-                <input class="border focus:border-teal-dark focus:outline-none leading-tight px-3 py-2 rounded text-grey-darker w-full" type="text" name="ticker" />
-                <small class="table mt-1">A valid ticker symbol. Supported symbols: <a asp-controller="SupportedTickers" asp-action="Stocks" target="_blank" class="text-teal-dark">Stocks & ETFs</a>, <a asp-controller="SupportedTickers" asp-action="Crypto" target="_blank" class="text-teal-dark">Cryptocurrencies</a>.</small>
-            </label>
-            
-            <label class="table text-sm w-full mb-4">
-                <strong class="mb-1 table text-grey-darkest">Monitored % <sup class="text-red">*</sup></strong>
-                <input class="border focus:border-teal-dark focus:outline-none leading-tight px-3 py-2 rounded text-grey-darker w-full" type="text" name="percentage" placeholder="+5.44% or -10.5%" />
-                <small class="table mt-1">If the price moves by n% up or down, the tweet will be made. Please use negative numbers for downward price movement.</small>
-            </label>
-
-            <label class="table text-sm w-full mb-4">
-                <strong class="mb-1 table text-grey-darkest">Tweet Text</strong>
-                <textarea class="border focus:border-teal-dark focus:outline-none leading-tight px-3 py-2 rounded text-grey-darker w-full" type="text" name="tweet" rows="5" placeholder="$MSFT has moved 5.44% over the past hour."></textarea>
-                <small class="table mt-1">Optionally format your tweet for this entry. Defaults to the generic Tweet text.</small>
-            </label>
-            
-            <span class="flex items-center text-sm mt-6">
-                <input
-                    class="border border-transparent cursor-pointer leading-tight px-4 py-2 rounded text-grey-darker text-white focus:border-teal-dark focus:bg-white focus:text-teal-dark bg-teal hover:border-teal-dark hover:bg-white hover:text-teal-dark"
-                    type="submit"
-                    value="Submit Ticker"
-                />
-                <a class="text-teal-dark ml-4" asp-controller="Portfolio" asp-action="Index">Cancel</a>
-            </span>
-        </p>
-    </form>
-</div></div>
+@if ("POST" == Context.Request.Method)
+{
+    @section Scripts
+    {
+        <script type="text/javascript">
+            // prevent form re-submission on reload
+            window.history.replaceState(null, null, window.location.href)
+        </script>
+    }
+}
