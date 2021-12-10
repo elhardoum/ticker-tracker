@@ -47,10 +47,24 @@
                     <td class="p-2">
                         <a asp-controller="Portfolio" asp-action="Update" asp-route-editId="@item.Id.ToString()" class="text-teal-dark cursor-pointer">Edit</a>
                         &nbsp;&nbsp;
-                        <a class="text-red-dark cursor-pointer" href="javascript:">Delete</a>
+                        <a asp-controller="Portfolio" asp-action="Delete" asp-route-deleteId="@item.Id.ToString()" class="text-red-dark cursor-pointer hidden action--delete">Delete</a>
                     </td>
                 </tr>
             }
         </tbody>
     </table>
 </div></div>
+
+@section Scripts
+{
+    <script>
+      document.querySelectorAll('.action--delete').forEach(function(link)
+      {
+        link.classList.remove('hidden')
+        link.addEventListener('click', function(e)
+        {
+          return confirm('Are you sure?') ? true : e.preventDefault()
+        })
+      })
+    </script>
+} 

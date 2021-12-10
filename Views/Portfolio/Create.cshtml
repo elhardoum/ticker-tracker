@@ -3,6 +3,7 @@
     string ticker = "POST" == Context.Request.Method && Context.Request.Form.ContainsKey("ticker") ? Context.Request.Form["ticker"].ToString() : "";
     string percentage = "POST" == Context.Request.Method && Context.Request.Form.ContainsKey("percentage") ? Context.Request.Form["percentage"].ToString() : "";
     string tweet = "POST" == Context.Request.Method && Context.Request.Form.ContainsKey("tweet") ? Context.Request.Form["tweet"].ToString() : "";
+    bool enabled = "POST" == Context.Request.Method ? Context.Request.Form.ContainsKey("enabled") : true;
 
     var editItem = (TickerTracker.Models.PortfolioItem)ViewData["editItem"];
 
@@ -11,6 +12,7 @@
         ticker = editItem.Symbol.ToString();
         percentage = editItem.Percent.ToString();
         tweet = editItem.TweetText.ToString();
+        enabled = 1 == editItem.Enabled;
         ViewData["Title"] = "Edit Portfolio Entry";
     }
 }
@@ -39,14 +41,14 @@
                 <label class="table text-sm w-full mb-4">
                     <strong class="mb-1 table text-grey-darkest">Ticker Symbol <sup class="text-red">*</sup></strong>
                     <input class="border focus:border-teal-dark focus:outline-none leading-tight px-3 py-2 rounded text-grey-darker w-full" type="text" name="ticker"
-                       @{ <text>value="@ticker"</text> } />
+                           @{ <text> value="@ticker" </text>  } />
                     <small class="table mt-1">A valid ticker symbol. Supported symbols: <a asp-controller="SupportedTickers" asp-action="Stocks" target="_blank" class="text-teal-dark">Stocks & ETFs</a>, <a asp-controller="SupportedTickers" asp-action="Crypto" target="_blank" class="text-teal-dark">Cryptocurrencies</a>.</small>
                 </label>
 
                 <label class="table text-sm w-full mb-4">
                     <strong class="mb-1 table text-grey-darkest">Monitored % <sup class="text-red">*</sup></strong>
                     <input class="border focus:border-teal-dark focus:outline-none leading-tight px-3 py-2 rounded text-grey-darker w-full" type="text" name="percentage" placeholder="+5.44% or -10.5%"
-                      @{ <text>value="@percentage"</text> } />
+                           @{ <text> value="@percentage" </text>  } />
                     <small class="table mt-1">If the price moves by n% up or down, the tweet will be made. Please use negative numbers for downward price movement.</small>
                 </label>
 
@@ -56,10 +58,18 @@
                     <small class="table mt-1">Optionally format your tweet for this entry. Defaults to the generic Tweet text.</small>
                 </label>
 
+                <span class="table text-sm w-full mb-4">
+                    <label class="flex items-center">
+                        <input type="checkbox" name="enabled"
+                            @{if (enabled) {<text> checked="checked" </text>} }/>
+                        <strong class="ml-2">Enable tweeting for this entry.</strong>
+                    </label>
+                </span>
+
                 <span class="flex items-center text-sm mt-6">
                     <input class="border border-transparent cursor-pointer leading-tight px-4 py-2 rounded text-grey-darker text-white focus:border-teal-dark focus:bg-white focus:text-teal-dark bg-teal hover:border-teal-dark hover:bg-white hover:text-teal-dark"
-                           type="submit"
-                           @{if (null != editItem) {<text>value="Update Ticker"</text>} else {<text>value="Submit Ticker"</text>} } />
+                      type="submit"
+                      @{if (null != editItem) {<text> value="Update Ticker" </text> } else {<text> value="Submit Ticker" </text> } } />
                     <a class="text-teal-dark ml-4" asp-controller="Portfolio" asp-action="Index">Cancel</a>
                 </span>
             </p>

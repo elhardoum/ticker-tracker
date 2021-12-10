@@ -180,6 +180,13 @@ namespace TickerTracker
                 );
 
                 endpoints.MapControllerRoute(
+                    "portfolio-edit",
+                    "/portfolio/delete/{deleteId}",
+                    new { controller = "Portfolio", action = "Delete", authProtected = true },
+                    constraints: new { deleteId = "\\d+" }
+                );
+
+                endpoints.MapControllerRoute(
                     "supported-tickers",
                     "/about/supported-ticker-symbols/stocks-etfs",
                     new { controller = "SupportedTickers", action = "Stocks" }

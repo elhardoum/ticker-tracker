@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Primitives;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
+using System.Linq;
 
 namespace TickerTracker.Controllers
 {
@@ -11,14 +12,15 @@ namespace TickerTracker.Controllers
     {
         public async Task<IActionResult> Index()
         {
-            ViewData["items"] = await Models.PortfolioItems.findByField("UserId", ((Models.User)HttpContext.Items["user"]).Id.ToString());
+            ViewData["items"] = (await Models.PortfolioItems.findByField("UserId", ((Models.User)HttpContext.Items["user"]).Id.ToString()))
+                .OrderByDescending(o => o.Id).ToList();
 
             return View();
         }
 
         public async Task<IActionResult> Update(long? editId = 0) => await Create(editId);
 
-        public async Task<IActionResult> Create(long? editId=0)
+        public async Task<IActionResult> Create(long? editId = 0)
         {
             Models.PortfolioItem editItem = null;
 
@@ -26,13 +28,13 @@ namespace TickerTracker.Controllers
             {
                 editItem = new Models.PortfolioItem
                 {
-                    Id = (long) editId
+                    Id = (long)editId
                 };
 
-                if ( ! await editItem.Load() )
+                if (!await editItem.Load())
                     return Redirect(Url.Action("Index", "Portfolio", null, Request.Scheme));
 
-                if ( editItem.UserId != ((Models.User)HttpContext.Items["user"]).Id )
+                if (editItem.UserId != ((Models.User)HttpContext.Items["user"]).Id)
                     return Redirect(Url.Action("Index", "Portfolio", null, Request.Scheme));
             }
 
@@ -44,8 +46,9 @@ namespace TickerTracker.Controllers
                 complete = complete && Request.Form.TryGetValue("ticker", out StringValues ticker);
                 complete = complete && Request.Form.TryGetValue("percentage", out StringValues percentage);
                 complete = complete && Request.Form.TryGetValue("tweet", out StringValues tweet);
+                Request.Form.TryGetValue("enabled", out StringValues enabled);
 
-                if ( complete )
+                if (complete)
                 {
                     var stocks = await getSupportedStocks();
                     var crypto = await getSupportedCrypto();
@@ -54,7 +57,7 @@ namespace TickerTracker.Controllers
                     bool isCrypto = false;
                     double percent = 0;
 
-                    if ( 0 == ticker.Count || string.IsNullOrEmpty( ticker[0].Trim() ))
+                    if (0 == ticker.Count || string.IsNullOrEmpty(ticker[0].Trim()))
                     {
                         errors.Add("Please enter a valid ticker symbol.");
                     } else
@@ -62,13 +65,13 @@ namespace TickerTracker.Controllers
                         // check if symbol is a valid stock/etf
                         isStock = stocks.ContainsKey(ticker[0].Trim().ToUpper());
 
-                        if ( ! isStock )
+                        if (!isStock)
                         { // symbol is not a stock, check if symbol is in crypto dict
-                            foreach ( var x in crypto.Values)
+                            foreach (var x in crypto.Values)
                             {
                                 if (x.TryGetValue("symbol", out string symbol))
                                 {
-                                    if ( symbol.ToString().ToUpper() == ticker[0].Trim().ToUpper())
+                                    if (symbol.ToString().ToUpper() == ticker[0].Trim().ToUpper())
                                     {
                                         isCrypto = true;
                                         break;
@@ -77,7 +80,7 @@ namespace TickerTracker.Controllers
                             }
                         }
 
-                        if ( ! isStock && ! isCrypto)
+                        if (!isStock && !isCrypto)
                         {
                             errors.Add("Symbol not supported.");
                         }
@@ -87,11 +90,11 @@ namespace TickerTracker.Controllers
                     {
                         errors.Add("Please enter a movement percentage.");
                     }
-                    else if ( ! double.TryParse(percentage[0].Trim(), out percent) )
+                    else if (!double.TryParse(percentage[0].Trim(), out percent))
                     {
                         errors.Add("Please enter a valid movement percentage.");
                     }
-                    else if ( percent == 0 || percent > 100 || percent < -100 )
+                    else if (percent == 0 || percent > 100 || percent < -100)
                     {
                         errors.Add("Please enter a valid movement percentage.");
                     }
@@ -101,7 +104,7 @@ namespace TickerTracker.Controllers
                         errors.Add("Tweet text cannot be longer than 500 characters. Remember, a tweet cannot exceed 280 characters to go through.");
                     }
 
-                    if ( 0 == errors.Count )
+                    if (0 == errors.Count)
                     {
                         if (null != editItem && editItem.Id > 0)
                         {
@@ -109,6 +112,7 @@ namespace TickerTracker.Controllers
                             editItem.IsCrypto = isCrypto ? 1 : 0;
                             editItem.Percent = percent;
                             editItem.TweetText = tweet;
+                            editItem.Enabled = enabled.Count > 0 ? 1 : 0;
                             editItem.Updated = DateTime.Now;
 
                             if (await editItem.Save())
@@ -124,7 +128,7 @@ namespace TickerTracker.Controllers
                                 UserId = ((Models.User)HttpContext.Items["user"]).Id,
                                 Symbol = ticker[0].Trim().ToUpper(),
                                 IsCrypto = isCrypto ? 1 : 0,
-                                Enabled = 1,
+                                Enabled = enabled.Count > 0 ? 1 : 0,
                                 Percent = percent,
                                 TweetText = tweet,
                             };
@@ -143,6 +147,24 @@ namespace TickerTracker.Controllers
             }
 
             return View("~/Views/Portfolio/Create.cshtml");
+        }
+
+        public async Task<IActionResult> Delete(long deleteId)
+        {
+            var item = new Models.PortfolioItem
+            {
+                Id = (long) deleteId
+            };
+
+            if (!await item.Load())
+                return Redirect(Url.Action("Index", "Portfolio", null, Request.Scheme));
+
+            if (item.UserId != ((Models.User)HttpContext.Items["user"]).Id)
+                return Redirect(Url.Action("Index", "Portfolio", null, Request.Scheme));
+
+            await item.Delete();
+
+            return Redirect(Url.Action("Index", "Portfolio", null, Request.Scheme));
         }
 
         private async Task<Dictionary<string, string>> getSupportedStocks()
