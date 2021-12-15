@@ -227,16 +227,19 @@ namespace TickerTracker
             RecurringJob.RemoveIfExists("fetch-crypto");
             RecurringJob.RemoveIfExists("fetch-quotes");
             RecurringJob.RemoveIfExists("tweet");
+            RecurringJob.RemoveIfExists("publish-tweets");
 
             // initial run
             Task.Run(() => cron.FetchStocks());
             Task.Run(() => cron.FetchCrypto());
             Task.Run(() => cron.Tweet());
+            Task.Run(() => cron.PublishTweets());
 
             RecurringJob.AddOrUpdate("fetch-stocks", () => cron.FetchStocks(), "*/30 * * * *");
             RecurringJob.AddOrUpdate("fetch-crypto", () => cron.FetchCrypto(), "*/30 * * * *");
             RecurringJob.AddOrUpdate("fetch-quotes", () => cron.FetchQuotes(), "* * * * *");
             RecurringJob.AddOrUpdate("tweet", () => cron.Tweet(), "* * * * *");
+            RecurringJob.AddOrUpdate("publish-tweets", () => cron.PublishTweets(), "* * * * *");
         }
     }
 }

@@ -76,7 +76,7 @@ namespace TickerTracker.Models
 
             await Database.Query(async (conn) =>
             {
-                String query = $"select top 1 * from Tweets where Id = @Id";
+                String query = $"select top 1 * from Tweets where Id = @Id and ([Url] is null or [Url] = '')";
 
                 SqlCommand command = new SqlCommand(query, conn);
 

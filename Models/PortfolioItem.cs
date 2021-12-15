@@ -15,6 +15,7 @@ namespace TickerTracker.Models
         public double Percent;
         public string TweetText;
         public DateTime Updated;
+        public DateTime LastTweetedQuoteTimestamp;
 
         public async Task<bool> Save()
         {
@@ -33,17 +34,18 @@ namespace TickerTracker.Models
                             Enabled=@Enabled,
                             [Percent]=@Percent,
                             TweetText=@TweetText,
-                            Updated=@Updated
+                            Updated=@Updated,
+                            LastTweetedQuoteTimestamp=@LastTweetedQuoteTimestamp
                         output Inserted.Id
                         where Id=@Id;
                     else
-                        insert into Portfolio (UserId, Symbol, IsCrypto, Enabled, [Percent], TweetText, Updated)
+                        insert into Portfolio (UserId, Symbol, IsCrypto, Enabled, [Percent], TweetText, Updated, LastTweetedQuoteTimestamp)
                             output Inserted.Id
-                            values (@UserId, @Symbol, @IsCrypto, @Enabled, @Percent, @TweetText, @Updated);";
+                            values (@UserId, @Symbol, @IsCrypto, @Enabled, @Percent, @TweetText, @Updated, @LastTweetedQuoteTimestamp);";
                 } else {
-                    query = @"insert into Portfolio (UserId, Symbol, IsCrypto, Enabled, [Percent], TweetText, Updated)
+                    query = @"insert into Portfolio (UserId, Symbol, IsCrypto, Enabled, [Percent], TweetText, Updated, LastTweetedQuoteTimestamp)
                             output Inserted.Id
-                            values (@UserId, @Symbol, @IsCrypto, @Enabled, @Percent, @TweetText, @Updated);";
+                            values (@UserId, @Symbol, @IsCrypto, @Enabled, @Percent, @TweetText, @Updated, @LastTweetedQuoteTimestamp);";
                 }
 
                 SqlCommand command = new SqlCommand(query, conn);
@@ -56,6 +58,7 @@ namespace TickerTracker.Models
                 command.Parameters.Add(new SqlParameter("@Percent", Percent));
                 command.Parameters.Add(new SqlParameter("@TweetText", null == TweetText ? "" : TweetText));
                 command.Parameters.Add(new SqlParameter("@Updated", Updated == DateTime.MinValue ? DateTime.Now : Updated));
+                command.Parameters.Add(new SqlParameter("@LastTweetedQuoteTimestamp", LastTweetedQuoteTimestamp));
 
                 try
                 {
@@ -104,6 +107,9 @@ namespace TickerTracker.Models
                             Percent = double.Parse(reader["Percent"].ToString()); // double
                             TweetText = reader["TweetText"].ToString(); // string
                             Updated = DateTime.Parse(reader["Updated"].ToString()); // DateTime
+                            LastTweetedQuoteTimestamp = ! string.IsNullOrEmpty(reader["LastTweetedQuoteTimestamp"].ToString())
+                                ? DateTime.Parse(reader["LastTweetedQuoteTimestamp"].ToString())
+                                : DateTime.MinValue; // DateTime
                             loaded = Id > 0;
                         }
                     }

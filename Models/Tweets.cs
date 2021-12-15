@@ -94,7 +94,7 @@ namespace TickerTracker.Models
             return items;
         }
 
-        private static Tweet parse(SqlDataReader reader) => new Tweet
+        public static Tweet parse(SqlDataReader reader) => new Tweet
         {
             Id = long.Parse(reader["Id"].ToString()), // long
             Text = reader["Text"].ToString(), // string

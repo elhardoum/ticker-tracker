@@ -19,7 +19,7 @@ if not exists (select * from sysobjects where name='Users' and xtype='U')
     Avatar varchar(300) not null,
     Token varchar(150),
     Secret varchar(150),
-    SessionDd varchar(32)
+    SessionId varchar(32)
   )
 go
 
@@ -50,7 +50,7 @@ if not exists (select * from sysobjects where name='Tweets' and xtype='U')
   create table Tweets (
     Id bigint primary key identity,
     [Text] varchar(500) not null,
-    [Url] varchar(200) not null,
+    [Url] varchar(200),
     PortfolioId bigint not null references Portfolio (Id),
     Created datetime not null,
   )

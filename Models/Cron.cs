@@ -5,6 +5,8 @@ using Newtonsoft.Json;
 using System.Collections.Generic;
 using Hangfire;
 using System.Linq;
+using Tweetinvi;
+using Tweetinvi.Models;
 
 namespace TickerTracker.Models
 {
@@ -138,6 +140,8 @@ namespace TickerTracker.Models
                 }
             });
 
+            Console.WriteLine("fetch quotes: " + symbols.Count);
+
             if (0 == symbols.Count)
                 return;
 
@@ -267,7 +271,7 @@ namespace TickerTracker.Models
             {
                 String query = @"if exists ( select 1 from DictQuotes where Symbol=@Symbol )
                     update DictQuotes set Movement=@Movement, LastQuote=@LastQuote, Quote=@Quote, Updated=@Updated
-                        where Name=@Name;
+                        where Symbol=@Symbol;
                 else
                     insert into DictQuotes (Symbol, Movement, LastQuote, Quote, Updated)
                         values (@Symbol, @Movement, @LastQuote, @Quote, @Updated);";
@@ -301,7 +305,6 @@ namespace TickerTracker.Models
 
             await Database.Query(async (conn) =>
             {
-                // select tickers updated longer than 1 hour ago
                 String query = @"select top 10 t.*, p.*, t.Updated as QuoteUpdated, u.Handle, u.Secret, u.Token from DictQuotes t
                     join Portfolio p on p.Enabled = 1 and p.Symbol = t.Symbol and (
                         p.LastTweetedQuoteTimestamp is null
@@ -312,6 +315,8 @@ namespace TickerTracker.Models
                         and (
                             ( [Percent] < 0 and Movement <= [Percent] )
                             or ( [Percent] > 0 and Movement >= [Percent] )
+                        ) and not exists (
+                            select max(Created) from Tweets where PortfolioId = p.Id group by PortfolioId
                         )";
 
                 SqlCommand command = new SqlCommand(query, conn);
@@ -335,7 +340,7 @@ namespace TickerTracker.Models
                                         Movement = decimal.Parse(reader["Movement"].ToString()),
                                         LastQuote = decimal.Parse(reader["LastQuote"].ToString()),
                                         Quote = decimal.Parse(reader["Quote"].ToString()),
-                                        Updated = DateTime.Parse(reader["Updated"].ToString()),
+                                        Updated = DateTime.Parse(reader["QuoteUpdated"].ToString()),
                                     },
                                     handle = reader["Handle"].ToString(),
                                     secret = reader["Secret"].ToString(),
@@ -360,9 +365,129 @@ namespace TickerTracker.Models
 
             Task.WaitAll(items.Select(item => Task.Run(async () =>
             {
-                Console.WriteLine( $"{item.quote.Symbol} / mv: {item.quote.Movement}" );
+                var Tweet = new Tweet
+                {
+                    Text = formatText(item), // string
+                    Url = "", // string
+                    PortfolioId = item.portfolioItem.Id, // long
+                    Created = DateTime.Now, // DateTime
+                };
 
-                await Task.Run(() => 1);
+                Console.WriteLine( $"{item.quote.Symbol} / mv: {item.quote.Movement}" );
+                Console.WriteLine( Tweet.Text );
+
+                var oldValue = item.portfolioItem.LastTweetedQuoteTimestamp;
+
+                item.portfolioItem.LastTweetedQuoteTimestamp = item.quote.Updated;
+
+                if ( await item.portfolioItem.Save() )
+                {
+                    if ( ! await Tweet.Save() )
+                    {
+                        item.portfolioItem.LastTweetedQuoteTimestamp = oldValue;
+                        await item.portfolioItem.Save();
+                    }
+
+                }
+            })).ToArray());
+        }
+
+        public string formatText( TweetTask item )
+        {
+            string template = item.portfolioItem.TweetText;
+
+            if ( string.IsNullOrEmpty(template)) // use default
+            {
+                template = "${TICKER} has moved {MOVEMENT}% over the past hour. #{TICKER}";
+            }
+
+            while (template.Contains("{TICKER}")) template = template.Replace("{TICKER}", item.quote.Symbol.ToUpper());
+            while (template.Contains("{MOVEMENT}")) template = template.Replace("{MOVEMENT}", item.quote.Movement.ToString());
+
+            return template;
+        }
+
+        [DisableConcurrentExecution(timeoutInSeconds: 10 * 60)]
+        public async Task PublishTweets()
+        {
+            var items = new List<Tweet>();
+            var tokens = new Dictionary<long, string>();
+            var secrets = new Dictionary<long, string>();
+
+            Console.WriteLine("publish.init :: {0}", items.Count);
+
+            await Database.Query(async (conn) =>
+            {
+                // skip stale tweets, those older than 1 hour and not published successfully
+                String query = @"select top 10 t.*, p.Symbol, p.IsCrypto, p.[Percent], p.UserId, u.Token, u.Secret from Tweets t
+                    join Portfolio p on t.PortfolioId = p.Id
+                    join Users u on u.Id = p.UserId
+                    where ([Url] is null or [Url] = '')
+                        and datediff(second, t.Created, getdate()) <= 60*60";
+
+                SqlCommand command = new SqlCommand(query, conn);
+
+                try
+                {
+                    using (SqlDataReader reader = await command.ExecuteReaderAsync())
+                    {
+                        while (reader.Read())
+                        {
+                            if ( ! string.IsNullOrEmpty(reader["Text"].ToString()) )
+                            {
+                                var tweet = Tweets.parse(reader);
+
+                                if ( ! tokens.ContainsKey(tweet.PortfolioItemMin.UserId) )
+                                {
+                                    tokens.Add(tweet.PortfolioItemMin.UserId, reader["token"].ToString());
+                                }
+
+                                if ( ! secrets.ContainsKey(tweet.PortfolioItemMin.UserId) )
+                                {
+                                    secrets.Add(tweet.PortfolioItemMin.UserId, reader["secret"].ToString());
+                                }
+
+                                items.Add(tweet);
+                            }
+                        }
+                    }
+                }
+                catch (SqlException e)
+                {
+                    Console.WriteLine("Tweets.findOne error: {0}, {1}", e.ToString(), e.Message);
+                }
+            });
+
+            Console.WriteLine("post>> {0}", items.Count);
+
+            if (0 == items.Count)
+                return;
+
+            Task.WaitAll(items.Select(item => Task.Run(async () =>
+            {
+                Console.WriteLine("Publish tweet " + item.Text );
+
+                var userClient = new TwitterClient(
+                    Models.Util.getEnv("TWITTER_CONSUMER_KEY"),
+                    Models.Util.getEnv("TWITTER_CONSUMER_SECRET"),
+                    tokens[item.PortfolioItemMin.UserId],
+                    secrets[item.PortfolioItemMin.UserId]);
+
+                ITweet tweet = null;
+
+                try
+                {
+                    tweet = await userClient.Tweets.PublishTweetAsync(item.Text);
+                } catch (Exception e) {
+                    Console.WriteLine(e.Message);
+                }
+
+                if ( null != tweet && tweet.Id > 0)
+                {
+                    item.Url = "https://twitter.com/x/status/" + tweet.Id;
+                    await item.Save();
+                    Console.WriteLine("Tweet published " + tweet.Id);
+                }
             })).ToArray());
         }
     }

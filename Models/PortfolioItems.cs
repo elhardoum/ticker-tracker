@@ -17,6 +17,7 @@ namespace TickerTracker.Models
             "Percent",
             "TweetText",
             "Updated",
+            "LastTweetedQuoteTimestamp",
         };
 
         public static async Task<List<PortfolioItem>> findByField(string field, string value)
@@ -66,6 +67,10 @@ namespace TickerTracker.Models
             Percent = double.Parse(reader["Percent"].ToString()), // double
             TweetText = reader["TweetText"].ToString(), // string
             Updated = DateTime.Parse(reader["Updated"].ToString()), // DateTime
+            LastTweetedQuoteTimestamp =
+                ! string.IsNullOrEmpty(reader["LastTweetedQuoteTimestamp"].ToString())
+                ? DateTime.Parse(reader["LastTweetedQuoteTimestamp"].ToString())
+                : DateTime.MinValue, // DateTime
         };
     }
 }
