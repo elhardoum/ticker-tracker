@@ -58,7 +58,8 @@ namespace TickerTracker.Models
                 command.Parameters.Add(new SqlParameter("@Percent", Percent));
                 command.Parameters.Add(new SqlParameter("@TweetText", null == TweetText ? "" : TweetText));
                 command.Parameters.Add(new SqlParameter("@Updated", Updated == DateTime.MinValue ? DateTime.Now : Updated));
-                command.Parameters.Add(new SqlParameter("@LastTweetedQuoteTimestamp", LastTweetedQuoteTimestamp));
+                command.Parameters.Add(new SqlParameter("@LastTweetedQuoteTimestamp",
+                    LastTweetedQuoteTimestamp == DateTime.MinValue ? DateTime.Now.AddYears(-1) : LastTweetedQuoteTimestamp));
 
                 try
                 {

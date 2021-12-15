@@ -64,8 +64,7 @@ namespace TickerTracker.Models
                 await Database.Query(async (conn) =>
                 {
                     String query = @"select t.*, p.Symbol, p.IsCrypto, p.[Percent], p.UserId from Tweets t
-                        join Portfolio p on p.Id = t.PortfolioId
-                        where t.Id in (select Id from Portfolio where UserId = @UserId)";
+                        join Portfolio p on p.Id = t.PortfolioId and p.UserId = @UserId";
 
                     SqlCommand command = new SqlCommand(query, conn);
 

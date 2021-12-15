@@ -16,7 +16,6 @@
                 <th class="p-2">Ticker</th>
                 <th class="p-2">Status</th>
                 <th class="p-2">Monitored %</th>
-                <th class="p-2">Tweets</th>
                 <th class="p-2"></th>
             </tr>
         </thead>
@@ -42,8 +41,9 @@
                         }
                     </td>
                     <td class="p-2">@item.Percent</td>
-                    <td class="p-2"><a asp-controller="Tweets" asp-action="ByPortfolio" asp-route-id="@item.Id.ToString()" class="text-teal-dark cursor-pointer">0</a></td>
                     <td class="p-2">
+                        <a asp-controller="Tweets" asp-action="ByPortfolio" asp-route-id="@item.Id.ToString()"  class="text-teal-dark cursor-pointer">Tweets</a>
+                        &nbsp;&nbsp;
                         <a asp-controller="Portfolio" asp-action="Update" asp-route-editId="@item.Id.ToString()" class="text-teal-dark cursor-pointer">Edit</a>
                         &nbsp;&nbsp;
                         <a asp-controller="Portfolio" asp-action="Delete" asp-route-deleteId="@item.Id.ToString()" class="text-red-dark cursor-pointer hidden action--delete">Delete</a>
