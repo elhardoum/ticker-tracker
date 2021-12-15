@@ -8,7 +8,7 @@ namespace TickerTracker.Models
 {
     public class PortfolioItems
     {
-        public static string[] Columns = new string[]{
+        public static readonly string[] Columns = new string[]{
             "Id",
             "UserId",
             "Symbol",
@@ -40,17 +40,7 @@ namespace TickerTracker.Models
                     {
                         while (reader.Read())
                         {
-                            var item = new PortfolioItem
-                            {
-                                Id = long.Parse(reader["Id"].ToString()), // long
-                                UserId = long.Parse(reader["UserId"].ToString()), // long
-                                Symbol = reader["Symbol"].ToString(), // string
-                                IsCrypto = int.Parse(reader["IsCrypto"].ToString()), // int
-                                Enabled = int.Parse(reader["Enabled"].ToString()), // int
-                                Percent = double.Parse(reader["Percent"].ToString()), // double
-                                TweetText = reader["TweetText"].ToString(), // string
-                                Updated = DateTime.Parse(reader["Updated"].ToString()), // DateTime
-                            };
+                            var item = parse(reader);
 
                             if ( item.Id > 0 )
                                 items.Add(item);
@@ -59,11 +49,23 @@ namespace TickerTracker.Models
                 }
                 catch (SqlException e)
                 {
-                    Console.WriteLine("Users.findOne error: {0}, {1}", e.ToString(), e.Message);
+                    Console.WriteLine("PortfolioItems.findOne error: {0}, {1}", e.ToString(), e.Message);
                 }
             });
 
             return items;
         }
+
+        public static PortfolioItem parse(SqlDataReader reader) => new PortfolioItem
+        {
+            Id = long.Parse(reader["Id"].ToString()), // long
+            UserId = long.Parse(reader["UserId"].ToString()), // long
+            Symbol = reader["Symbol"].ToString(), // string
+            IsCrypto = int.Parse(reader["IsCrypto"].ToString()), // int
+            Enabled = int.Parse(reader["Enabled"].ToString()), // int
+            Percent = double.Parse(reader["Percent"].ToString()), // double
+            TweetText = reader["TweetText"].ToString(), // string
+            Updated = DateTime.Parse(reader["Updated"].ToString()), // DateTime
+        };
     }
 }

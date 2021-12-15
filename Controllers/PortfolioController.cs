@@ -50,8 +50,8 @@ namespace TickerTracker.Controllers
 
                 if (complete)
                 {
-                    var stocks = await getSupportedStocks();
-                    var crypto = await getSupportedCrypto();
+                    var stocks = await Models.Util.getSupportedStocks();
+                    var crypto = await Models.Util.getSupportedCrypto();
                     List<string> errors = new List<string>();
                     bool isStock = false;
                     bool isCrypto = false;
@@ -165,32 +165,6 @@ namespace TickerTracker.Controllers
             await item.Delete();
 
             return Redirect(Url.Action("Index", "Portfolio", null, Request.Scheme));
-        }
-
-        private async Task<Dictionary<string, string>> getSupportedStocks()
-        {
-            var stocksRaw = await Models.Util.getOption("supported-stocks");
-            var stocks = new Dictionary<string, string>();
-
-            if (null != stocksRaw)
-            {
-                stocks = JsonConvert.DeserializeObject<Dictionary<string, string>>(stocksRaw.Value);
-            }
-
-            return stocks;
-        }
-
-        private async Task<Dictionary<string, Dictionary<string, string>>> getSupportedCrypto()
-        {
-            var cryptoRaw = await Models.Util.getOption("supported-crypto");
-            var crypto = new Dictionary<string, Dictionary<string, string>>();
-
-            if (null != cryptoRaw)
-            {
-                crypto = JsonConvert.DeserializeObject<Dictionary<string, Dictionary<string, string>>>(cryptoRaw.Value);
-            }
-
-            return crypto;
         }
     }
 }

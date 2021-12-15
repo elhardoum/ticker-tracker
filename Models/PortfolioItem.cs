@@ -110,7 +110,7 @@ namespace TickerTracker.Models
                 }
                 catch (SqlException e)
                 {
-                    Console.WriteLine("Option.Load error: {0}, {1}", e.ToString(), e.Message);
+                    Console.WriteLine("PortfolioItem.Load error: {0}, {1}", e.ToString(), e.Message);
                 }
             });
 

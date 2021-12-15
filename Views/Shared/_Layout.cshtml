@@ -31,6 +31,7 @@
                         @if (null != Context.Items["user"])
                         {
                             <a asp-controller="Portfolio" asp-action="Index" class="hover:underline no-underline text-white">Portfolio</a>
+                            <a asp-controller="Tweets" asp-action="Index" class="hover:underline no-underline text-white ml-3">Tweets</a>
 
                             <span class="border flex items-center ml-4 px-2 py-1 rounded">
                                 <img @{ <text> src="@user.Avatar" </text>  <text> alt="@user.Name" </text> } class="h-8 mr-1 rounded-full" />

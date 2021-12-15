@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Net.Http;
 using System.Security.Cryptography;
 using System.Text;
@@ -19,6 +20,8 @@ namespace TickerTracker.Models
         public static async Task<bool> setOption(string name, string value) => await _Util.setOption(name, value);
         public static async Task<string> getUrl(string url) => await _Util.getUrl(url);
         public static void Debug(object obj) => Console.WriteLine(JsonConvert.SerializeObject(obj));
+        public static async Task<Dictionary<string, string>> getSupportedStocks() => await _Util.getSupportedStocks();
+        public static async Task<Dictionary<string, Dictionary<string, string>>> getSupportedCrypto() => await _Util.getSupportedCrypto();
     }
 
     public class _Util
@@ -113,6 +116,32 @@ namespace TickerTracker.Models
                 Console.WriteLine("Util.JsonRequest error: {0}, {1}", e.ToString(), e.Message);
                 return null;
             }
+        }
+
+        public static async Task<Dictionary<string, string>> getSupportedStocks()
+        {
+            var stocksRaw = await Models.Util.getOption("supported-stocks");
+            var stocks = new Dictionary<string, string>();
+
+            if (null != stocksRaw)
+            {
+                stocks = JsonConvert.DeserializeObject<Dictionary<string, string>>(stocksRaw.Value);
+            }
+
+            return stocks;
+        }
+
+        public static async Task<Dictionary<string, Dictionary<string, string>>> getSupportedCrypto()
+        {
+            var cryptoRaw = await Models.Util.getOption("supported-crypto");
+            var crypto = new Dictionary<string, Dictionary<string, string>>();
+
+            if (null != cryptoRaw)
+            {
+                crypto = JsonConvert.DeserializeObject<Dictionary<string, Dictionary<string, string>>>(cryptoRaw.Value);
+            }
+
+            return crypto;
         }
     }
 }

@@ -21,7 +21,6 @@
             </tr>
         </thead>
         <tbody>
-
             @foreach (var item in items)
             {
                 <tr class="text-xs break-words px-4 py-4 bg-grey-lighter">
@@ -43,12 +42,19 @@
                         }
                     </td>
                     <td class="p-2">@item.Percent</td>
-                    <td class="p-2">0</td>
+                    <td class="p-2"><a asp-controller="Tweets" asp-action="ByPortfolio" asp-route-id="@item.Id.ToString()" class="text-teal-dark cursor-pointer">0</a></td>
                     <td class="p-2">
                         <a asp-controller="Portfolio" asp-action="Update" asp-route-editId="@item.Id.ToString()" class="text-teal-dark cursor-pointer">Edit</a>
                         &nbsp;&nbsp;
                         <a asp-controller="Portfolio" asp-action="Delete" asp-route-deleteId="@item.Id.ToString()" class="text-red-dark cursor-pointer hidden action--delete">Delete</a>
                     </td>
+                </tr>
+            }
+
+            @if ( 0 == items.Count )
+            {
+                <tr class="text-xs break-words px-4 py-4 bg-grey-lighter">
+                    <td class="italic p-2 text-center text-grey-dark text-sm tracking-wide" colspan="5">No portfolio items available.</td>
                 </tr>
             }
         </tbody>

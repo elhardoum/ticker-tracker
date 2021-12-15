@@ -187,6 +187,26 @@ namespace TickerTracker
                 );
 
                 endpoints.MapControllerRoute(
+                    "tweets",
+                    "/tweets",
+                    new { controller = "Tweets", action = "Index", authProtected = true }
+                );
+
+                endpoints.MapControllerRoute(
+                    "tweets-by-portfolio",
+                    "/portfolio/{id}/tweets",
+                    new { controller = "Tweets", action = "ByPortfolio", authProtected = true },
+                    constraints: new { id = "\\d+" }
+                );
+
+                endpoints.MapControllerRoute(
+                    "tweets-by-portfolio",
+                    "/tweets/{id}/delete",
+                    new { controller = "Tweets", action = "Delete", authProtected = true },
+                    constraints: new { id = "\\d+" }
+                );
+
+                endpoints.MapControllerRoute(
                     "supported-tickers",
                     "/about/supported-ticker-symbols/stocks-etfs",
                     new { controller = "SupportedTickers", action = "Stocks" }
@@ -205,13 +225,18 @@ namespace TickerTracker
             // cleanup
             RecurringJob.RemoveIfExists("fetch-stocks");
             RecurringJob.RemoveIfExists("fetch-crypto");
+            RecurringJob.RemoveIfExists("fetch-quotes");
+            RecurringJob.RemoveIfExists("tweet");
 
             // initial run
             Task.Run(() => cron.FetchStocks());
             Task.Run(() => cron.FetchCrypto());
+            Task.Run(() => cron.Tweet());
 
-            RecurringJob.AddOrUpdate("fetch-stocks", () => cron.FetchStocks(), "*/2 * * * *");
-            RecurringJob.AddOrUpdate("fetch-crypto", () => cron.FetchCrypto(), "*/2 * * * *");
+            RecurringJob.AddOrUpdate("fetch-stocks", () => cron.FetchStocks(), "*/30 * * * *");
+            RecurringJob.AddOrUpdate("fetch-crypto", () => cron.FetchCrypto(), "*/30 * * * *");
+            RecurringJob.AddOrUpdate("fetch-quotes", () => cron.FetchQuotes(), "* * * * *");
+            RecurringJob.AddOrUpdate("tweet", () => cron.Tweet(), "* * * * *");
         }
     }
 }

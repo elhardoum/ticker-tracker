@@ -42,5 +42,38 @@ if not exists (select * from sysobjects where name='Portfolio' and xtype='U')
     [Percent] decimal(5,2) not null check ( [Percent] <> 0 and [Percent] <= 100 ),
     TweetText varchar(500),
     Updated datetime not null,
+    LastTweetedQuoteTimestamp datetime,
+  )
+go
+
+if not exists (select * from sysobjects where name='Tweets' and xtype='U')
+  create table Tweets (
+    Id bigint primary key identity,
+    [Text] varchar(500) not null,
+    [Url] varchar(200) not null,
+    PortfolioId bigint not null references Portfolio (Id),
+    Created datetime not null,
+  )
+go
+
+if not exists (select * from sysobjects where name='Quotes' and xtype='U')
+  create table Quotes (
+    Id bigint primary key identity,
+    Symbol varchar(100) not null,
+    Quote decimal(18,2) not null,
+    Updated datetime not null,
+    LastQuote decimal(18,2),
+    LastQuoteUpdated datetime,
+  )
+go
+
+if not exists (select * from sysobjects where name='DictQuotes' and xtype='U')
+  create table DictQuotes (
+    Symbol varchar(100) primary key not null,
+    Movement decimal(10,2) not null check(Movement > 0 or Movement < 0),
+    LastQuote decimal(18,2) not null,
+    Quote decimal(18,2) not null,
+    Updated datetime not null,
+    unique(Symbol)
   )
 go
