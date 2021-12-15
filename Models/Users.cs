@@ -26,7 +26,7 @@ namespace TickerTracker.Models
 
             await Database.Query(async (conn) =>
             {
-                String query = $"select top 1 * from Users where {field} = @val";
+                String query = $"select top 1 * from Users where [{field}] = @val";
 
                 SqlCommand command = new SqlCommand(query, conn);
 
