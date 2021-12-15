@@ -22,10 +22,10 @@ namespace TickerTracker.Models
             await Database.Query(async (conn) =>
             {
                 String query = @"if exists ( select 1 from Users where Id=@Id )
-                    update Users set Handle=@Handle, Name=@Name, Avatar=@Avatar, Token=@Token, Secret=@Secret, SessionId=@SessionId
+                    update Users set Handle=@Handle, Name=@Name, Avatar=@Avatar, Token=@Token, Secret=@Secret, [SessionId]=@SessionId
                         where Id=@Id;
                 else
-                    insert into Users (Id, Handle, Name, Avatar, Token, Secret, SessionId)
+                    insert into Users (Id, Handle, Name, Avatar, Token, Secret, [SessionId])
                         values (@Id, @Handle, @Name, @Avatar, @Token, @Secret, @SessionId);";
 
                 SqlCommand command = new SqlCommand(query, conn);
