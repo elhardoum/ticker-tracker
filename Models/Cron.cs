@@ -101,14 +101,15 @@ namespace TickerTracker.Models
             {
                 // select tickers updated longer than 1 hour ago
                 String query = @"select max(q.Updated) as Updated, case
-                        when datediff(second, max(q.Updated), getdate()) >= 60*60 then q.Symbol
+                        when max(q.Updated) is null then p.Symbol
+                        when datediff(second, max(q.Updated), getdate()) >= 60*60 then p.Symbol
                         else ''
                     end as Symbol,
                         max(p.IsCrypto) as IsCrypto,
                         max(q.Quote) as LastQuote
                     from Quotes q
-                    join Portfolio p on p.Symbol = q.Symbol and p.Enabled = 1
-                    group by q.Symbol
+                    right join Portfolio p on p.Symbol = q.Symbol and p.Enabled = 1
+                    group by p.Symbol
                     order by Updated desc";
 
                 SqlCommand command = new SqlCommand(query, conn);
@@ -239,8 +240,10 @@ namespace TickerTracker.Models
 
             await Database.Query(async (conn) =>
             {
-                String query = @"insert into Quotes (Symbol, Quote, Updated, LastQuote, LastQuoteUpdated)
-                        values (@Symbol, @Quote, @Updated, @LastQuote, @LastQuoteUpdated);";
+                bool hasLastUpdated = DateTime.MinValue != LastQuoteUpdated;
+
+                String query = @$"insert into Quotes (Symbol, Quote, Updated, LastQuote{(hasLastUpdated ? ", LastQuoteUpdated" : "")})
+                        values (@Symbol, @Quote, @Updated, @LastQuote{(hasLastUpdated ? ", @LastQuoteUpdated" : "")});";
 
                 SqlCommand command = new SqlCommand(query, conn);
 
@@ -248,7 +251,9 @@ namespace TickerTracker.Models
                 command.Parameters.Add(new SqlParameter("@Quote", Quote));
                 command.Parameters.Add(new SqlParameter("@Updated", Updated));
                 command.Parameters.Add(new SqlParameter("@LastQuote", LastQuote));
-                command.Parameters.Add(new SqlParameter("@LastQuoteUpdated", LastQuoteUpdated));
+
+                if ( hasLastUpdated )
+                    command.Parameters.Add(new SqlParameter("@LastQuoteUpdated", LastQuoteUpdated));
 
                 try
                 {
@@ -315,9 +320,12 @@ namespace TickerTracker.Models
                         and (
                             ( [Percent] < 0 and Movement <= [Percent] )
                             or ( [Percent] > 0 and Movement >= [Percent] )
-                        ) and not exists (
-                            select max(Created) from Tweets where PortfolioId = p.Id group by PortfolioId
-                        )";
+                        ) and (
+                            select case
+                                when datediff(second, max(Created), getdate()) <= 60*60 then max(Created)
+                                else null
+                            end as Created from Tweets where PortfolioId = p.Id group by PortfolioId
+                        ) is null";
 
                 SqlCommand command = new SqlCommand(query, conn);
 

@@ -232,6 +232,7 @@ namespace TickerTracker
             // initial run
             Task.Run(() => cron.FetchStocks());
             Task.Run(() => cron.FetchCrypto());
+            Task.Run(() => cron.FetchQuotes());
             Task.Run(() => cron.Tweet());
             Task.Run(() => cron.PublishTweets());
 

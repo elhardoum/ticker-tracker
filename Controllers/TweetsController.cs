@@ -44,11 +44,8 @@ namespace TickerTracker.Controllers
             if (!await item.Load())
                 return Redirect(Url.Action("Index", "Tweets", null, Request.Scheme));
 
-            // @todo check user
-            return Json("null");
-
-            //if (item.UserId != ((Models.User)HttpContext.Items["user"]).Id)
-            //    return Redirect(Url.Action("Index", "Tweets", null, Request.Scheme));
+            if (item.PortfolioItemMin.UserId != ((Models.User)HttpContext.Items["user"]).Id)
+                return Redirect(Url.Action("Index", "Tweets", null, Request.Scheme));
 
             await item.Delete();
 
